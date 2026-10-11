@@ -1,0 +1,2833 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="description" content="Leitfaden in einfacher Sprache: Eigener Server, Servermiete oder Managed Cloud Services — Kosten über 10 Jahre, Aufwand, Sicherheit und CO₂e im neutralen Vergleich">
+<meta name="author" content="Projektleitung (https://github.com/eifel42[eifel42])">
+<meta name="copyright" content="Copyright (C) 2026 https://github.com/little-trotter/invoice">
+<title>Betriebsmodelle und Wirtschaftlichkeit: Cloud vs. On-Premise</title>
+<link rel="stylesheet" href="css/arc42-docs.css">
+<!-- arc42 documentation — docinfo header -->
+<!-- No external runtime resources: generated output must not depend on CDNs. -->
+
+<!-- Meta tags for better mobile experience -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- App accent color (--lt-accent in styles.css); browsers auto-pick a
+     prefers-color-scheme variant of the same file, but there is no
+     dedicated dark theme-color here since the docs page itself always
+     paints its own dark background via CSS regardless. -->
+<meta name="theme-color" content="#1A73E8">
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const path = window.location.pathname;
+    const isIndex = path.endsWith('/index.html') || path === '/' || path === '';
+
+    if (isIndex || document.querySelector('.back-to-index')) {
+      return;
+    }
+
+    const pageTitle =
+      document.querySelector('#content h1, #header h1')?.textContent?.trim() ||
+      document.title.replace(/\s+-\s+.*$/, '').trim() ||
+      'Current page';
+
+    const link = document.createElement('a');
+    link.href = 'index.html';
+    link.className = 'back-to-index';
+    link.setAttribute('rel', 'home');
+    link.setAttribute('aria-label', `Back from ${pageTitle} to the documentation index`);
+    link.setAttribute('title', 'Back to documentation index');
+    link.innerHTML = `
+      <span class="back-to-index__icon" aria-hidden="true">
+        <span class="back-to-index__arrow">&larr;</span>
+      </span>
+      <span class="back-to-index__copy">
+        <span class="back-to-index__eyebrow">Documentation Hub</span>
+        <span class="back-to-index__title">Return to index</span>
+      </span>
+    `;
+    document.body.appendChild(link);
+
+    // Executive Brand Header Banner (A-Concept)
+    if (!document.querySelector('.lt-brand-bar')) {
+      const brandBar = document.createElement('div');
+      brandBar.className = 'lt-brand-bar';
+      brandBar.innerHTML = `
+        <div class="lt-brand-bar__inner">
+          <a href="index.html" class="lt-brand-bar__logo-link" title="Little Trotter Homepage">
+            <img src="images/little-trotter-head-icon.svg" alt="Little Trotter Horse Head Icon" class="lt-brand-bar__icon" />
+          </a>
+          <div class="lt-brand-bar__text">
+            <div class="lt-brand-bar__title">LITTLE TROTTER</div>
+            <div class="lt-brand-bar__subtitle">X-Invoice</div>
+          </div>
+          <div class="lt-brand-bar__badges">
+            <span class="lt-brand-badge">v0.9.35-SNAPSHOT</span>
+            <span class="lt-brand-badge lt-brand-badge--preview">Developer Preview</span>
+          </div>
+        </div>
+      `;
+      const headerEl = document.getElementById('header') || document.body.firstChild;
+      if (headerEl && headerEl.parentNode) {
+        headerEl.parentNode.insertBefore(brandBar, headerEl);
+      } else {
+        document.body.insertBefore(brandBar, document.body.firstChild);
+      }
+    }
+  });
+</script>
+
+<!-- Focus styles -->
+<style>
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Improved focus styles for accessibility */
+  a:focus, button:focus, input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--lt-accent, #1A73E8);
+    outline-offset: 2px;
+  }
+
+  /* Dark mode: all variables are defined in arc42-docs.css / arc42-canvas.css
+     (loaded via :stylesheet:, always present on every page this file is
+     injected into) — this block just reads --lt-* custom properties, it
+     does not redefine them. */
+</style>
+
+<!-- Disclaimer footer injected on all arc42 pages -->
+<style>
+  #ltx-disclaimer {
+    margin-top: 3rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--lt-rule, #DADCE0);
+    font-size: 0.8rem;
+    color: var(--lt-text-secondary, #5F6368);
+    line-height: 1.6;
+  }
+  #ltx-disclaimer .disclaimer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-bottom: 6px;
+  }
+  #ltx-disclaimer .disclaimer-links a {
+    color: var(--lt-accent, #1A73E8);
+  }
+  #ltx-disclaimer .disclaimer-note {
+    color: var(--lt-text-disabled, #9AA0A6);
+    font-size: 0.75rem;
+  }
+  @media print {
+    #ltx-disclaimer { display: none; }
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footer = document.createElement('div');
+    footer.id = 'ltx-disclaimer';
+    footer.innerHTML = `
+      <div class="disclaimer-links">
+        <a href="https://github.com/little-trotter" target="_blank" rel="noopener">&#169; 2026 little-trotter</a>
+        <a href="index.html">Documentation Index</a>
+      </div>
+      <p class="disclaimer-note">
+        Internal architecture documentation for Little Trotter X-Invoice.
+        AI-assisted documentation &middot; Synthetic test data (datagen) &middot; Not published outside the development team.
+      </p>
+    `;
+    document.body.appendChild(footer);
+  });
+</script>
+
+<!-- Click-to-zoom lightbox for arc42 diagrams (dependency-free) -->
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  #content .imageblock img {
+    cursor: zoom-in;
+  }
+
+  .lt-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .88);
+    cursor: zoom-out;
+    touch-action: none;
+  }
+
+  /* Sized by script to fit 95vw x 95vh while keeping the aspect ratio: vector diagrams are
+     scaled up, raster images never beyond their natural size. No letterboxing, so the
+     white diagram background ends exactly where the image ends.
+     Zoom/pan is layered on top via a CSS transform (translate + scale) with
+     transform-origin at the top-left corner, so the script's math stays in one
+     coordinate space (see setZoom/clampPan below). */
+  .lt-lightbox__img {
+    display: block;
+    cursor: zoom-out;
+    background: #ffffff;
+    transform-origin: 0 0;
+    will-change: transform;
+    touch-action: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  .lt-lightbox__hint {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: .75rem;
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .75);
+    pointer-events: none;
+  }
+
+  .lt-lightbox__close {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .4);
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .lt-lightbox__close:hover {
+    background: rgba(255, 255, 255, .24);
+  }
+  .lt-lightbox__close:focus {
+    outline: 3px solid var(--lt-accent, #1A73E8);
+    outline-offset: 2px;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = document.querySelectorAll('#content .imageblock img');
+    if (!images.length) {
+      return;
+    }
+
+    let overlay = null;
+    let overlayImg = null;
+    let closeBtn = null;
+    let lastFocused = null;
+
+    // Zoom/pan state, shared by the single overlay instance. `scale` is relative
+    // to the fitted size from fitOverlayImage(); translate is in screen pixels
+    // and applies via `transform: translate(tx,ty) scale(scale)` with
+    // transform-origin 0 0 (see CSS), so the maths below stays in one space.
+    const MIN_SCALE = 1;
+    const MAX_SCALE = 8;
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+    let baseRect = null; // overlayImg's layout rect while scale=1/tx=0/ty=0
+    const activePointers = new Map(); // pointerId -> {x, y}, for pan + pinch
+    let dragState = null; // single-pointer drag/click tracking
+    let pinchState = null; // two-pointer pinch-zoom tracking
+    let pendingClickTimer = null; // double-click disambiguation on the image
+
+    function isSvgSrc(src) {
+      return /\.svg(\?.*)?$/i.test(src || '');
+    }
+
+    function labelFor(img) {
+      const figureTitle = img.closest('.imageblock')?.querySelector('.title')?.textContent?.trim();
+      return figureTitle || img.getAttribute('alt') || 'Diagram';
+    }
+
+    function fitOverlayImage(allowUpscale) {
+      const naturalWidth = overlayImg.naturalWidth;
+      const naturalHeight = overlayImg.naturalHeight;
+      if (!naturalWidth || !naturalHeight) {
+        return;
+      }
+      let fitted = Math.min(
+        (window.innerWidth * 0.95) / naturalWidth,
+        (window.innerHeight * 0.95) / naturalHeight
+      );
+      if (!allowUpscale) {
+        fitted = Math.min(fitted, 1);
+      }
+      overlayImg.style.width = Math.round(naturalWidth * fitted) + 'px';
+      overlayImg.style.height = Math.round(naturalHeight * fitted) + 'px';
+    }
+
+    function applyTransform() {
+      overlayImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    }
+
+    function resetTransform() {
+      scale = 1;
+      tx = 0;
+      ty = 0;
+      applyTransform();
+      overlayImg.style.cursor = '';
+    }
+
+    // Fit the image to the viewport and drop any zoom/pan, then remember its
+    // untransformed layout rect -- the fixed reference point for all zoom/pan math.
+    function refit(allowUpscale) {
+      fitOverlayImage(allowUpscale);
+      resetTransform();
+      baseRect = overlayImg.getBoundingClientRect();
+    }
+
+    // Keep at least 20% of the (scaled) image inside the viewport on each axis.
+    function clampPan() {
+      if (!baseRect) {
+        return;
+      }
+      const displayedWidth = baseRect.width * scale;
+      const displayedHeight = baseRect.height * scale;
+      const minVisibleX = displayedWidth * 0.2;
+      const minVisibleY = displayedHeight * 0.2;
+      const txMax = window.innerWidth - minVisibleX - baseRect.left;
+      const txMin = minVisibleX - displayedWidth - baseRect.left;
+      const tyMax = window.innerHeight - minVisibleY - baseRect.top;
+      const tyMin = minVisibleY - displayedHeight - baseRect.top;
+      tx = Math.min(txMax, Math.max(txMin, tx));
+      ty = Math.min(tyMax, Math.max(tyMin, ty));
+    }
+
+    // Zoom to `newScale`, keeping the content point under (clientX, clientY) fixed on screen.
+    function setZoom(newScale, clientX, clientY) {
+      if (!baseRect) {
+        return;
+      }
+      newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+      if (newScale === scale) {
+        return;
+      }
+      const localX = (clientX - baseRect.left - tx) / scale;
+      const localY = (clientY - baseRect.top - ty) / scale;
+      tx += localX * (scale - newScale);
+      ty += localY * (scale - newScale);
+      scale = newScale;
+      clampPan();
+      applyTransform();
+      overlayImg.style.cursor = scale > 1 ? 'grab' : '';
+    }
+
+    function toggleZoom(clientX, clientY) {
+      if (scale > 1) {
+        resetTransform();
+      } else {
+        setZoom(2.5, clientX, clientY);
+      }
+    }
+
+    function distanceBetween(p1, p2) {
+      return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+    }
+
+    function midpointBetween(p1, p2) {
+      return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    }
+
+    // A pointerup that never moved 4px is a "click". On the backdrop that always
+    // closes; on the image it closes only when not zoomed, with a short delay so
+    // a second click arriving in time is treated as a double-click (zoom toggle)
+    // instead.
+    function handleClick(clientX, clientY, onImage) {
+      if (!onImage) {
+        closeLightbox();
+        return;
+      }
+      if (pendingClickTimer) {
+        clearTimeout(pendingClickTimer);
+        pendingClickTimer = null;
+        toggleZoom(clientX, clientY);
+        return;
+      }
+      pendingClickTimer = setTimeout(() => {
+        pendingClickTimer = null;
+        if (scale <= 1) {
+          closeLightbox();
+        }
+      }, 300);
+    }
+
+    function onPointerDown(event) {
+      if (event.target === closeBtn) {
+        return; // the button handles its own click
+      }
+      event.preventDefault(); // no native image drag / text selection while panning
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      const onImage = event.target === overlayImg;
+
+      if (activePointers.size === 2) {
+        // Second finger: switch to pinch-zoom, drop any single-pointer drag.
+        dragState = null;
+        const pts = [...activePointers.values()];
+        const mid = midpointBetween(pts[0], pts[1]);
+        pinchState = {
+          dist: distanceBetween(pts[0], pts[1]),
+          scale0: scale,
+          localX: (mid.x - baseRect.left - tx) / scale,
+          localY: (mid.y - baseRect.top - ty) / scale
+        };
+        return;
+      }
+
+      if (activePointers.size === 1) {
+        overlayImg.setPointerCapture?.(event.pointerId);
+        dragState = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          startTx: tx,
+          startTy: ty,
+          moved: false,
+          onImage
+        };
+        if (scale > 1 && onImage) {
+          overlayImg.style.cursor = 'grabbing';
+        }
+      }
+    }
+
+    function onPointerMove(event) {
+      if (!activePointers.has(event.pointerId)) {
+        return;
+      }
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pinchState && activePointers.size === 2) {
+        const pts = [...activePointers.values()];
+        const newDist = distanceBetween(pts[0], pts[1]);
+        const mid = midpointBetween(pts[0], pts[1]);
+        scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchState.scale0 * (newDist / pinchState.dist)));
+        tx = mid.x - baseRect.left - pinchState.localX * scale;
+        ty = mid.y - baseRect.top - pinchState.localY * scale;
+        clampPan();
+        applyTransform();
+        return;
+      }
+
+      if (dragState && event.pointerId === dragState.pointerId && activePointers.size === 1) {
+        const dx = event.clientX - dragState.startX;
+        const dy = event.clientY - dragState.startY;
+        if (Math.hypot(dx, dy) > 4) {
+          dragState.moved = true;
+        }
+        if (scale > 1 && dragState.onImage) {
+          tx = dragState.startTx + dx;
+          ty = dragState.startTy + dy;
+          clampPan();
+          applyTransform();
+        }
+      }
+    }
+
+    function onPointerUp(event) {
+      if (!activePointers.has(event.pointerId)) {
+        return;
+      }
+      activePointers.delete(event.pointerId);
+
+      if (pinchState) {
+        if (activePointers.size < 2) {
+          pinchState = null;
+        }
+        return;
+      }
+
+      if (dragState && event.pointerId === dragState.pointerId) {
+        overlayImg.style.cursor = scale > 1 ? 'grab' : '';
+        if (!dragState.moved) {
+          handleClick(event.clientX, event.clientY, dragState.onImage);
+        }
+        dragState = null;
+      }
+    }
+
+    function onPointerCancel(event) {
+      activePointers.delete(event.pointerId);
+      pinchState = null;
+      dragState = null;
+    }
+
+    function buildOverlay() {
+      overlay = document.createElement('div');
+      overlay.className = 'lt-lightbox';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.hidden = true;
+
+      overlayImg = document.createElement('img');
+      overlayImg.className = 'lt-lightbox__img';
+      overlayImg.draggable = false; // otherwise a mouse drag starts native image drag-and-drop
+      overlayImg.style.transform = 'translate(0px, 0px) scale(1)';
+
+      closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'lt-lightbox__close';
+      closeBtn.setAttribute('aria-label', 'Close enlarged image');
+      closeBtn.innerHTML = '&times;';
+
+      const hint = document.createElement('p');
+      hint.className = 'lt-lightbox__hint';
+      hint.setAttribute('aria-hidden', 'true');
+      hint.textContent = 'Scroll or pinch to zoom · drag to pan · 0 resets · Esc closes';
+
+      overlay.appendChild(overlayImg);
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(hint);
+      document.body.appendChild(overlay);
+
+      overlayImg.addEventListener('load', () => refit(isSvgSrc(overlayImg.src)));
+      window.addEventListener('resize', () => {
+        if (!overlay.hidden) {
+          refit(isSvgSrc(overlayImg.src));
+        }
+      });
+
+      overlay.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        const notches = -event.deltaY / 100;
+        setZoom(scale * Math.pow(1.1, notches), event.clientX, event.clientY);
+      }, { passive: false });
+
+      overlay.addEventListener('pointerdown', onPointerDown);
+      overlay.addEventListener('pointermove', onPointerMove);
+      overlay.addEventListener('pointerup', onPointerUp);
+      overlay.addEventListener('pointercancel', onPointerCancel);
+
+      closeBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeLightbox();
+      });
+      overlay.addEventListener('keydown', (event) => {
+        const panStep = 40;
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeLightbox();
+        } else if (event.key === 'Tab') {
+          // Only the close button is focusable inside the dialog: keep Tab there.
+          event.preventDefault();
+          closeBtn.focus();
+        } else if (event.key === '+' || event.key === '=') {
+          event.preventDefault();
+          setZoom(scale * 1.4, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (event.key === '-' || event.key === '_') {
+          event.preventDefault();
+          setZoom(scale / 1.4, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (event.key === '0') {
+          event.preventDefault();
+          resetTransform();
+        } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          if (event.key === 'ArrowUp') ty -= panStep;
+          else if (event.key === 'ArrowDown') ty += panStep;
+          else if (event.key === 'ArrowLeft') tx += panStep;
+          else tx -= panStep;
+          clampPan();
+          applyTransform();
+        }
+      });
+    }
+
+    function openLightbox(img) {
+      if (!overlay) {
+        buildOverlay();
+      }
+      lastFocused = document.activeElement;
+
+      const src = img.currentSrc || img.src;
+      overlay.setAttribute('aria-label', img.getAttribute('alt') || labelFor(img));
+      overlayImg.alt = img.getAttribute('alt') || '';
+      overlayImg.style.width = '';
+      overlayImg.style.height = '';
+      overlayImg.src = src;
+      refit(isSvgSrc(src));
+
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closeLightbox() {
+      if (!overlay || overlay.hidden) {
+        return;
+      }
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+
+      if (pendingClickTimer) {
+        clearTimeout(pendingClickTimer);
+        pendingClickTimer = null;
+      }
+      dragState = null;
+      pinchState = null;
+      activePointers.clear();
+
+      if (lastFocused && typeof lastFocused.focus === 'function') {
+        lastFocused.focus();
+      }
+      lastFocused = null;
+    }
+
+    images.forEach((img) => {
+      img.setAttribute('tabindex', '0');
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', 'Enlarge: ' + labelFor(img));
+
+      img.addEventListener('click', () => openLightbox(img));
+      img.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openLightbox(img);
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Collapsible Table of Contents (Accordion) -->
+<style>
+  .lt-toc-search {
+    margin: 0 0 0.75rem;
+    position: relative;
+  }
+  .lt-toc-search__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    border: 1px solid var(--sidebar-border, #dadce0);
+    border-radius: 4px;
+    background: var(--lt-surface, #ffffff);
+    color: var(--lt-text-primary, #202124);
+    outline: none;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .lt-toc-search__input:focus {
+    border-color: var(--lt-accent, #1a73e8);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+  }
+  .lt-toc-search__results {
+    display: none;
+    max-height: 280px;
+    overflow-y: auto;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    list-style: none;
+    background: var(--lt-surface, #ffffff);
+    border: 1px solid var(--sidebar-border, #dadce0);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+    font-size: 0.78rem;
+    z-index: 10;
+  }
+  .lt-toc-search__results li a {
+    display: block;
+    padding: 6px 10px;
+    color: var(--lt-text-primary, #202124);
+    text-decoration: none;
+    line-height: 1.3;
+  }
+  .lt-toc-search__results li a:hover,
+  .lt-toc-search__results li a:focus {
+    background: var(--lt-hover, #e8f0fe);
+    color: var(--lt-accent, #1a73e8);
+  }
+  .lt-search-match {
+    background: var(--lt-selection, #fff3b0);
+    color: var(--lt-text-primary, #202124);
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+
+  /* Dark mode: the sidebar itself is the surface colour, so the search field and
+     its result list sit one step above it (raised surface) to stay visible as
+     controls; hover and match use the selection tone with primary text, which
+     keeps every pairing above the WCAG AA 4.5:1 contrast bar. */
+  @media (prefers-color-scheme: dark) {
+    .lt-toc-search__input,
+    .lt-toc-search__results {
+      background: var(--lt-surface-raised, #35363A);
+      border-color: var(--lt-rule, #3C4043);
+    }
+    .lt-toc-search__input::placeholder {
+      color: var(--lt-text-secondary, #BDC1C6);
+    }
+    .lt-toc-search__results {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+    .lt-toc-search__results li a:hover,
+    .lt-toc-search__results li a:focus {
+      background: var(--lt-selection, #404B5E);
+      color: var(--lt-text-primary, #E8EAED);
+    }
+    .lt-search-match {
+      background: var(--lt-selection, #404B5E);
+      color: var(--lt-text-primary, #E8EAED);
+    }
+  }
+
+  .lt-toc-controls {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--sidebar-border, #dadce0);
+  }
+
+  .lt-toc-btn {
+    background: transparent;
+    border: 1px solid var(--sidebar-border, #dadce0);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--lt-text-secondary, #5f6368);
+    cursor: pointer;
+    line-height: 1.2;
+    transition: all 0.15s ease-in-out;
+  }
+
+  .lt-toc-btn:hover,
+  .lt-toc-btn:focus-visible {
+    border-color: var(--lt-accent, #1a73e8);
+    color: var(--lt-accent, #1a73e8);
+    background-color: var(--lt-hover, #e8f0fe);
+    outline: none;
+  }
+
+  #toc li.has-children {
+    position: relative;
+  }
+
+  #toc li.has-children > a {
+    padding-right: 2.25rem;
+  }
+
+  .lt-toc-toggle {
+    position: absolute;
+    right: 0.25rem;
+    top: 0.25rem;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--lt-text-secondary, #5f6368);
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  }
+
+  .lt-toc-toggle:hover,
+  .lt-toc-toggle:focus-visible {
+    background-color: var(--lt-hover, #e8f0fe);
+    color: var(--lt-accent, #1a73e8);
+    outline: none;
+  }
+
+  .lt-toc-toggle svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #toc li.has-children > ul {
+    display: none;
+  }
+
+  #toc li.has-children.is-expanded > ul {
+    display: block;
+  }
+
+  #toc li.has-children.is-expanded > .lt-toc-toggle svg {
+    transform: rotate(90deg);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toc = document.getElementById('toc');
+    if (!toc) return;
+
+    const toctitle = document.getElementById('toctitle');
+    const isDe = (document.documentElement.lang || 'en').startsWith('de');
+
+    if (toctitle) {
+      const searchBox = document.createElement('div');
+      searchBox.className = 'lt-toc-search';
+      searchBox.innerHTML = `
+        <input type="search" class="lt-toc-search__input" placeholder="${isDe ? 'In Dokumentation suchen…' : 'Search documentation…'}" aria-label="${isDe ? 'Dokumentation durchsuchen' : 'Search documentation'}">
+        <ul class="lt-toc-search__results" role="listbox"></ul>
+      `;
+      toctitle.after(searchBox);
+
+      const input = searchBox.querySelector('.lt-toc-search__input');
+      const resultsList = searchBox.querySelector('.lt-toc-search__results');
+
+      // Index section titles and paragraphs
+      let searchIndex = null;
+      function buildIndex() {
+        if (searchIndex) return searchIndex;
+        searchIndex = [];
+        const content = document.getElementById('content');
+        if (!content) return searchIndex;
+        const headings = content.querySelectorAll('h1, h2, h3, h4');
+        headings.forEach(h => {
+          const id = h.id || h.querySelector('a.link, a.anchor')?.getAttribute('href')?.replace('#', '');
+          if (id && h.textContent.trim()) {
+            searchIndex.push({
+              id: id,
+              title: h.textContent.replace(/^§*\s*[\d.]*\s*/, '').trim(),
+              tag: h.tagName.toLowerCase(),
+              text: (h.nextElementSibling?.textContent || '').substring(0, 160)
+            });
+          }
+        });
+        return searchIndex;
+      }
+
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        if (query.length < 2) {
+          resultsList.style.display = 'none';
+          resultsList.innerHTML = '';
+          return;
+        }
+        const index = buildIndex();
+        const matches = index.filter(item =>
+          item.title.toLowerCase().includes(query) || item.text.toLowerCase().includes(query)
+        ).slice(0, 8);
+
+        if (matches.length === 0) {
+          resultsList.innerHTML = `<li style="padding:6px 10px;color:var(--lt-text-secondary);">${isDe ? 'Keine Treffer' : 'No results found'}</li>`;
+          resultsList.style.display = 'block';
+          return;
+        }
+
+        resultsList.innerHTML = matches.map(m => `
+          <li>
+            <a href="#${m.id}">
+              <strong>${m.title}</strong>
+              <div style="font-size:0.7rem;color:var(--lt-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.text}</div>
+            </a>
+          </li>
+        `).join('');
+        resultsList.style.display = 'block';
+      });
+
+      resultsList.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link) {
+          resultsList.style.display = 'none';
+          input.value = '';
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!searchBox.contains(e.target)) {
+          resultsList.style.display = 'none';
+        }
+      });
+
+      // Quick shortcut '/' to focus search
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== input && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+          e.preventDefault();
+          input.focus();
+        }
+      });
+
+      const controls = document.createElement('div');
+      controls.className = 'lt-toc-controls';
+      controls.innerHTML = `
+        <button type="button" class="lt-toc-btn lt-toc-btn--expand" title="${isDe ? 'Alle Abschnitte aufklappen' : 'Expand all sections'}">${isDe ? 'Alle aufklappen' : 'Expand all'}</button>
+        <button type="button" class="lt-toc-btn lt-toc-btn--collapse" title="${isDe ? 'Alle Abschnitte einklappen' : 'Collapse all sections'}">${isDe ? 'Alle einklappen' : 'Collapse all'}</button>
+      `;
+      searchBox.after(controls);
+
+      controls.querySelector('.lt-toc-btn--expand').addEventListener('click', () => {
+        toc.querySelectorAll('li.has-children').forEach((li) => {
+          li.classList.add('is-expanded');
+          const btn = li.querySelector(':scope > .lt-toc-toggle');
+          if (btn) btn.setAttribute('aria-expanded', 'true');
+        });
+      });
+
+      controls.querySelector('.lt-toc-btn--collapse').addEventListener('click', () => {
+        toc.querySelectorAll('li.has-children').forEach((li) => {
+          li.classList.remove('is-expanded');
+          const btn = li.querySelector(':scope > .lt-toc-toggle');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    const allLis = toc.querySelectorAll('li');
+    allLis.forEach((li) => {
+      const childUl = li.querySelector(':scope > ul');
+      const link = li.querySelector(':scope > a');
+      if (!childUl || !link) return;
+
+      li.classList.add('has-children');
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'lt-toc-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', isDe ? 'Unterpunkte umschalten' : 'Toggle sub-sections');
+      toggle.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>`;
+
+      link.after(toggle);
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const expanded = li.classList.toggle('is-expanded');
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+
+      link.addEventListener('click', () => {
+        li.classList.add('is-expanded');
+        toggle.setAttribute('aria-expanded', 'true');
+      });
+    });
+
+    function expandCurrentAnchor() {
+      const hash = window.location.hash;
+      if (!hash) return;
+      try {
+        const activeLink = toc.querySelector(`a[href="${hash}"]`);
+        if (activeLink) {
+          let parent = activeLink.closest('li.has-children');
+          while (parent) {
+            parent.classList.add('is-expanded');
+            const btn = parent.querySelector(':scope > .lt-toc-toggle');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+            parent = parent.parentElement ? parent.parentElement.closest('li.has-children') : null;
+          }
+        }
+      } catch (err) {
+        // Ignore malformed selector
+      }
+    }
+
+    expandCurrentAnchor();
+    window.addEventListener('hashchange', expandCurrentAnchor);
+  });
+</script>
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Betriebsmodelle und Wirtschaftlichkeit: Cloud vs. On-Premise</h1>
+<div class="details">
+<span id="author" class="author">Projektleitung (https://github.com/eifel42[eifel42])</span><br>
+<span id="revnumber">version 0.9.35-SNAPSHOT,</span>
+<span id="revdate">2026-10-11</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Inhaltsverzeichnis</div>
+<ul class="sectlevel1">
+<li><a href="#_auf_einen_blick">1. Auf einen Blick</a></li>
+<li><a href="#_drei_betriebsmodelle">2. Drei Betriebsmodelle</a></li>
+<li><a href="#_kosten_jahr_1_und_10_jahre">3. Kosten: Jahr 1 und 10 Jahre</a>
+<ul class="sectlevel2">
+<li><a href="#_kosten_nach_volumen">3.1. Kosten nach Volumen</a></li>
+</ul>
+</li>
+<li><a href="#realitaetscheck">4. Preisentwicklung</a></li>
+<li><a href="#betrieb">5. Betrieb und Wartung</a>
+<ul class="sectlevel2">
+<li><a href="#_eigener_server_on_premise">5.1. Eigener Server (On-Premise)</a></li>
+<li><a href="#_cloud_betrieb">5.2. Cloud-Betrieb</a></li>
+<li><a href="#aufwand">5.3. Aufwandsvergleich</a></li>
+<li><a href="#_auswirkung_auf_gesamtkosten">5.4. Auswirkung auf Gesamtkosten</a></li>
+<li><a href="#_erfahrungswerte_und_schrittweise_einführung">5.5. Erfahrungswerte und schrittweise Einführung</a></li>
+</ul>
+</li>
+<li><a href="#_sicherheit_datenschutz_abhängigkeit">6. Sicherheit, Datenschutz und Abhängigkeit</a>
+<ul class="sectlevel2">
+<li><a href="#migration">6.1. Gerätetausch und Migrationsaufwand</a></li>
+</ul>
+</li>
+<li><a href="#_vor_und_nachteile">7. Vor- und Nachteile</a></li>
+<li><a href="#_speicher_belege_co2e">8. Speicher, Belege und CO₂e</a>
+<ul class="sectlevel2">
+<li><a href="#_weg_eines_belegs">8.1. Weg eines Belegs</a></li>
+<li><a href="#_datensicherung_und_gesetzliche_belegaufbewahrung_8_jahre">8.2. Datensicherung und gesetzliche Belegaufbewahrung (8 Jahre)</a></li>
+<li><a href="#rechenbeispiel">8.3. Belegszenarien</a>
+<ul class="sectlevel3">
+<li><a href="#_einsparung_durch_belegreduktion">8.3.1. Einsparung durch Belegreduktion</a></li>
+</ul>
+</li>
+<li><a href="#_speicherbedarf_im_system_8_jahrgänge">8.4. Speicherbedarf im System (8 Jahrgänge)</a></li>
+<li><a href="#co2kosten">8.5. Kosten und CO₂e über 10 Jahre</a></li>
+</ul>
+</li>
+<li><a href="#anhang">9. Anhang: Modellrechnung</a>
+<ul class="sectlevel2">
+<li><a href="#_zweck">9.1. Zweck</a></li>
+<li><a href="#_formel">9.2. Formel</a></li>
+<li><a href="#_eingangswerte_und_herkunft">9.3. Eingangswerte und Herkunft</a></li>
+<li><a href="#_speicher_je_rechnung">9.4. Speicher je Rechnung</a></li>
+<li><a href="#_volumenszenarien">9.5. Volumenszenarien</a></li>
+<li><a href="#_break_even">9.6. Break-even</a></li>
+<li><a href="#_personentage">9.7. Personentage</a></li>
+<li><a href="#_nicht_enthalten">9.8. Nicht enthalten</a></li>
+<li><a href="#_grenzen">9.9. Grenzen</a></li>
+</ul>
+</li>
+<li><a href="#quellen">10. Quellen</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<div class="title">Zusammenfassung</div>
+<blockquote>
+Dieser Leitfaden vergleicht für Little Trotter X-Invoice den Betrieb auf einem eigenen Server mit dem Betrieb bei einem Cloud-Anbieter. Er stellt Kosten, Aufwand und Risiken verständlich gegenüber und spricht keine Empfehlung für ein Modell aus.
+</blockquote>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+<div class="dlist">
+<div class="title">Hinweise zu Transparenz, Testdaten und Modellannahmen</div>
+<dl>
+<dt class="hdlist1">Transparenz und KI-Assistenz</dt>
+<dd>
+<p>Diese Ausarbeitung wurde mit Unterstützung von generativen KI-Systemen erstellt, strukturiert und von der Projektleitung fachlich geprüft.</p>
+</dd>
+<dt class="hdlist1">Synthetische Testdaten und Richtwerte</dt>
+<dd>
+<p>Sämtliche Zahlenbeispiele, Annahmen und Kostenvergleiche stellen modellhafte Näherungen und Orientierungswerte dar (Stand Oktober 2026). Sie ersetzen keine kaufmännische Angebotseinholung bei konkreten IT-Systemhäusern oder Cloud-Providern.</p>
+</dd>
+<dt class="hdlist1">Rechtliche und steuerliche Einordnung</dt>
+<dd>
+<p>Der Leitfaden dient ausschließlich der neutralen Gegenüberstellung von Betriebsmodellen und stellt weder eine Kaufempfehlung noch eine Steuer- oder Rechtsberatung dar.</p>
+</dd>
+<dt class="hdlist1">Betriebssicherheit und Archivierung</dt>
+<dd>
+<p>Little Trotter ist eine Software zur E-Rechnungserstellung und ersetzt kein Dokumenten-Management-System (DMS). Die gesetzeskonforme Archivierung und Aufbewahrung von Belegen obliegt eigenverantwortlich dem betreibenden Unternehmen.</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_auf_einen_blick"><a class="anchor" href="#_auf_einen_blick"></a><a class="link" href="#_auf_einen_blick">1. Auf einen Blick</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Ein eigener Server kostet anfangs mehr, ist bei vergleichbarer Leistung (8 Kerne, 16 GB RAM) über zehn Jahre aber deutlich günstiger als jede Cloud-Variante, auch als reine Servermiete, bei der der Anbieter Hardware-Wartung, Komponententausch, Host-Failover und die Ausfallsicherheit der Speichermedien übernimmt. Personalkosten sind nicht eingerechnet, da sie je nach eigener oder externer Betreuung stark schwanken; den Aufwand in Personentagen zeigt <a href="#betrieb">Kapitel 5, <em>Betrieb und Wartung</em></a>.</p>
+</div>
+<div class="ulist kpi-tiles">
+<ul>
+<li>
+<p><span class="kpi-value">ca.&#160;2.530–&#8203;3.540&#160;€</span> Eigener Server (Mini-PC + NAS + Sicherung außer Haus), 10 Jahre</p>
+</li>
+<li>
+<p><span class="kpi-value">ca.&#160;5.380–&#8203;12.100&#160;€</span> Reine Servermiete, vergleichbare Leistung (selten allein genutzt), 10 Jahre</p>
+</li>
+<li>
+<p><span class="kpi-value">ca.&#160;8.340–&#8203;18.550&#160;€</span> Servermiete + gemanagte DB &amp; Storage-Services, 10 Jahre</p>
+</li>
+<li>
+<p><span class="kpi-value">ca.&#160;16.810–&#8203;35.900&#160;€</span> Managed Cloud, 10 Jahre</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Grundlage: 1.500 Rechnungen pro Jahr, Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung, ohne Personalkosten (Begründung im <a href="#anhang">Anhang</a>). Laut Statistischem Bundesamt nutzen 2025 54 % der Unternehmen ab 10 Beschäftigten kostenpflichtige Cloud-Dienste, kleine Unternehmen (10–49 Beschäftigte) zu 51 % <a href="#q1">[Q1]</a>; Rückschlüsse auf die Kosten im Einzelfall erlaubt das nicht. Preise der Cloud-Anbieter können sich ändern (siehe <a href="#realitaetscheck">Preisentwicklung</a>).</p>
+</div>
+<table class="tableblock frame-all grid-all stretch decision">
+<caption class="title">Tabelle 1. Modell je Ausgangslage</caption>
+<colgroup>
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 42.8572%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Ihre Lage</th>
+<th class="tableblock halign-left valign-top">Eher passend</th>
+<th class="tableblock halign-left valign-top">Warum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ein Standort, geringes Rechnungsvolumen, gelegentliche Betreuung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Niedrige Gesamtkosten, Daten im Haus</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mehrere Standorte, eigene IT-Kenntnis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete mit DB- &amp; Storage-Services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Feste Monatskosten, Medien-Ausfallsicherheit, Snapshots und Hardware-Wartung beim Anbieter, volle Anwendungskontrolle</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wenig eigene Plattformpflege gewünscht</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datenbank, Updates und Hardware beim Cloud-Anbieter; Zugänge, Kosten und Rechte bleiben bei Ihnen</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stark schwankende Last, schnelles Wachstum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud oder Servermiete</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kapazität kurzfristig anpassbar</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hohe Anforderungen an die Datenhoheit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server oder EU-Servermiete</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigene Wahl des Datenstandorts</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_drei_betriebsmodelle"><a class="anchor" href="#_drei_betriebsmodelle"></a><a class="link" href="#_drei_betriebsmodelle">2. Drei Betriebsmodelle</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Die Wahl ähnelt der zwischen Eigenheim und Mietwohnung: Keine Variante ist grundsätzlich besser, entscheidend sind Nutzungsdauer, Eigenleistung und Budgetplanung. Die Modelle unterscheiden sich vor allem darin, wem die Hardware gehört und wer den Betrieb verantwortet.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 2. Merkmale der drei Betriebsmodelle</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Merkmal</th>
+<th class="tableblock halign-left valign-top">On-Premise</th>
+<th class="tableblock halign-left valign-top">Servermiete</th>
+<th class="tableblock halign-left valign-top">Managed Cloud</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bild</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigenheim: hohe Anfangskosten, Instandhaltung und Absicherung bei Ihnen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unmöblierte Mietwohnung: Gebäude und Technik stellt die Vermietung, die Einrichtung übernehmen Sie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Möbliertes Apartment mit Rundum-Service: komplett ausgestattet, Abrechnung nach Nutzung</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hardware gehört</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ihnen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dem Cloud-Anbieter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dem Cloud-Anbieter</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hardware-Wartung &amp; Ausfallschutz</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sie (Ersatzbeschaffung, NAS-Spiegelung)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Anbieter (Wartung, Komponententausch, Host-Failover, Medien-Resilienz)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Anbieter (vollständig verwaltet und redundant)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Betriebssystem, Updates, Datenbank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Anbieter (je nach Dienst)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rechenzentrum, Strom</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sie (im Büro)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Anbieter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Anbieter</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kostenform</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hohe Einmalkosten, danach gering</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Feste Monatsmiete</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Laufende Gebühr nach Verbrauch</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verantwortung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vollständig bei Ihnen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Software bei Ihnen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Plattform beim Cloud-Anbieter</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Eigener Server:</strong> Mini-PC, optional mit Netzwerkspeicher (NAS), im Betrieb; nur im Firmennetz erreichbar. Nach 5–6 Jahren wird der Rechner neu gekauft.</p>
+</li>
+<li>
+<p><strong>Reine Servermiete:</strong> nur die Recheninstanz mit vergleichbarer Leistung (8 Kerne, 16 GB RAM), ca. 40–90 € pro Monat bei europäischen Anbietern. Sie wird selten allein gewählt, weil Datenbankpflege, Sicherung und Ausfallrisiko bei Ihnen bleiben. Üblich ist der Verbund mit gemanagter Datenbank und Storage-Services des Anbieters, ca. 62–138 € pro Monat (Schätzung, siehe <a href="#anhang">Anhang</a>). Große internationale Anbieter (Hyperscaler) verlangen für eine vergleichbare Instanz in Frankfurt im Querschnitt ca. 100–130 € pro Monat mit dreijähriger Laufzeitbindung; ohne Bindung ca. 225–305 € rund um die Uhr oder ca. 80–105 € bei Betrieb nur zu Bürozeiten.</p>
+</li>
+<li>
+<p><strong>Managed Cloud:</strong> Jeder Dienst wird einzeln abgerechnet; die Gesamtkosten sind dadurch schwerer vorherzusagen.</p>
+</li>
+<li>
+<p><strong>Verbreitete Mischformen:</strong> Gemietete Server kombiniert mit gemanagter Datenbank und Storage-Services (Snapshots, S3-kompatibler Objektspeicher) oder ein eigener Server mit Kaltarchiv beim Cloud-Anbieter (Hybrid). Sie verbinden feste Kosten für Rechenleistung mit der Ausfallsicherheit und einfachen Snapshot-Wiederherstellung gemanagter Dienste.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+<div class="title">Begriffe</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>On-Premise:</strong> Der Server steht bei Ihnen im Betrieb.</p>
+</li>
+<li>
+<p><strong>Cloud:</strong> Der Server steht beim Cloud-Anbieter. Sie nutzen ihn über das Internet.</p>
+</li>
+<li>
+<p><strong>IaaS:</strong> Sie mieten Technik, etwa einen Server. Betriebssystem und Programme verwalten Sie selbst.</p>
+</li>
+<li>
+<p><strong>PaaS / SaaS:</strong> Der Cloud-Anbieter liefert zusätzlich Plattform oder fertige Programme, etwa eine betriebene Datenbank.</p>
+</li>
+<li>
+<p><strong>Bare Metal:</strong> Sie mieten einen ganzen physischen Rechner.</p>
+</li>
+<li>
+<p><strong>CapEx / OpEx:</strong> Einmalige Anschaffung gegenüber laufenden Kosten.</p>
+</li>
+<li>
+<p><strong>TCO:</strong> Alle Kosten zusammen über einen festen Zeitraum.</p>
+</li>
+<li>
+<p><strong>Egress:</strong> Gebühr, wenn Daten das Rechenzentrum verlassen.</p>
+</li>
+<li>
+<p><strong>Lock-in:</strong> Ein Wechsel des Cloud-Anbieters ist teuer oder schwierig.</p>
+</li>
+<li>
+<p><strong>SLA:</strong> Vertraglich zugesagte Verfügbarkeit und Reaktionszeit.</p>
+</li>
+<li>
+<p><strong>FinOps:</strong> Cloud-Kosten laufend beobachten und steuern.</p>
+</li>
+<li>
+<p><strong>LTS:</strong> Software-Version mit mehrjährigen Sicherheitsupdates.</p>
+</li>
+<li>
+<p><strong>Snapshot:</strong> Momentaufnahme eines Datenträgers für die Wiederherstellung.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Weitere Begriffe erläutert das <a href="glossar.html">Fachglossar</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kosten_jahr_1_und_10_jahre"><a class="anchor" href="#_kosten_jahr_1_und_10_jahre"></a><a class="link" href="#_kosten_jahr_1_und_10_jahre">3. Kosten: Jahr 1 und 10 Jahre</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Der eigene Server hat hohe Anfangskosten, aber die niedrigsten Gesamtkosten. Die Cloud verursacht je nach Modell anfangs ähnliche oder höhere Kosten, die dauerhaft anfallen.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+Näherungen für 1.500 Rechnungen pro Jahr, Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung, 2,5 % Preissteigerung pro Jahr, 10 Jahre. Lizenzkosten fallen nicht an (reiner Open-Source-Stack). <strong>Nicht enthalten:</strong> Personalaufwand für Betrieb und für erzwungene Migrationen bei Versionsende von Cloud-Diensten (in Personentagen: <a href="#betrieb">Kapitel 5, <em>Betrieb und Wartung</em></a>), Ausfallkosten, Finanzierung, Steuern. Rechenweg: <a href="#anhang">Anhang</a>.
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch kpi">
+<caption class="title">Tabelle 3. Technikkosten ohne Personal, ca.</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Modell</th>
+<th class="tableblock halign-right valign-top">Jahr 1 (inkl. Anschaffung)</th>
+<th class="tableblock halign-right valign-top">10 Jahre kumuliert</th>
+<th class="tableblock halign-left valign-top">Kostenform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Mini-PC (ohne Sicherung außer Haus, unvollständig)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">630–840 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.660–2.290 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Anschaffung, Strom</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Mini-PC + NAS + Kaltarchiv (Sicherung außer Haus)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">970–1.290 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2.530–3.540 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Anschaffung, Strom, Archivgebühr</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Hybrid: Mini-PC + Kaltarchiv</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">650–880 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.860–2.680 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Anschaffung, Archivgebühr</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Reine Servermiete (nur Instanz)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">480–1.080 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">5.380–12.100 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Monatsmiete (selten allein genutzt)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Servermiete beim Hyperscaler (vergleichbare Instanz, 3 Jahre Laufzeitbindung, ohne Zusatzdienste)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.200–1.560 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">13.440–17.480 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Monatspreis mit Laufzeitbindung</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Servermiete + Storage-Services</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">600–1.360 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">6.720–15.190 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Miete, Snapshots/Storage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Servermiete + gemanagte DB &amp; Storage</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">740–1.660 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">8.340–18.550 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Miete, DB-Dienst, Snapshots (übliche Kombination)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Managed Cloud (mehrere Dienste)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.500–3.200 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">16.810–35.900 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gebühr je Dienst</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Einordnung der Werte:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Eigener Server:</strong> Der größte Teil fällt im ersten Jahr an (CapEx). Nach 5–6 Jahren wird der Mini-PC neu gekauft (angesetzt: 20–30 % teurer), die NAS-Festplatten werden getauscht. Strom und Datensicherung tragen Sie selbst. Ohne Sicherung außer Haus ist der eigene Server nicht vollständig abgesichert; die Zeile „Mini-PC“ dient nur dem Vergleich.</p>
+</li>
+<li>
+<p><strong>Cloud:</strong> Die Kosten im ersten Jahr sind je nach Modell ähnlich oder höher, fallen aber jedes Jahr erneut an (OpEx). Am Ende bleibt kein Gerät. Dafür übernimmt der Cloud-Anbieter die Wartung und den Austausch defekter Hardware, bietet automatisches Host-Failover und stellt ausfallsichere Medien (wie redundanten Netzwerk-Block-Storage) bereit.</p>
+</li>
+<li>
+<p><strong>Reine Servermiete vs. Managed Services:</strong> Reine Servermiete (nur Compute-Instanz) erscheint auf den ersten Blick günstig, wird in der Praxis aber selten allein gewählt: Ohne gemanagte Dienste verbleiben Datenbankadministration, Datensicherung und Ausfallrisiko komplett bei Ihnen. Deshalb wird sie meist mit Datenbank- und Storage-Services des Anbieters kombiniert.</p>
+</li>
+<li>
+<p><strong>Break-even</strong> (ohne Inflation, Mini-PC + NAS + Kaltarchiv gegenüber der Miete bei vergleichbarer Leistung): gegenüber Managed Cloud nach ca. 3–10 Monaten, gegenüber Hyperscaler-Instanz mit Laufzeitbindung nach ca. 7–13 Monaten, gegenüber Servermiete + gemanagter DB &amp; Storage nach ca. 7–22 Monaten, gegenüber Servermiete + Storage nach ca. 8–28 Monaten, gegenüber reiner Servermiete nach ca. 11–37 Monaten. Herleitung im <a href="#anhang">Anhang</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Personalkosten sind nicht enthalten,</strong> weil sich Tagessätze je Betrieb stark unterscheiden (eigene Mitarbeitende, Zeit der Geschäftsleitung, externes IT-Systemhaus) und ein Mischwert Genauigkeit vortäuschen würde. Sie lassen sich selbst ermitteln: <em>Personentage pro Jahr × eigener Tagessatz</em>, mit den Personentagen aus <a href="#betrieb">Kapitel 5, <em>Betrieb und Wartung</em></a>. Ohne Personalkosten erscheinen die Cloud-Modelle tendenziell günstiger, als sie mit Personal wären.</p>
+</div>
+<div class="sect2">
+<h3 id="_kosten_nach_volumen"><a class="anchor" href="#_kosten_nach_volumen"></a><a class="link" href="#_kosten_nach_volumen">3.1. Kosten nach Volumen</a></h3>
+<div class="paragraph">
+<p>Wachsend bzw. rückläufig steht für +10 % bzw. −10 % Rechnungen pro Jahr, jeweils Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung. Die Werte sind grobe Näherungen (Herleitung im <a href="#anhang">Anhang</a>).</p>
+</div>
+<table class="tableblock frame-all grid-all stretch kpi">
+<caption class="title">Tabelle 4. Kosten nach Volumen, Jahr 1</caption>
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Jahr 1, ca.</th>
+<th class="tableblock halign-right valign-top">Gleichbleibend</th>
+<th class="tableblock halign-right valign-top">Wachsend (+10 %)</th>
+<th class="tableblock halign-right valign-top">Rückläufig (−10 %)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC + NAS + Kaltarchiv</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">970–1.290 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">970–1.290 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">970–1.290 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reine Servermiete (nur Instanz)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">480–1.080 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">480–1.080 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">480–1.080 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + Storage-Services</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">600–1.360 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">610–1.390 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">590–1.330 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + gemanagte DB &amp; Storage</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">740–1.660 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">750–1.690 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">730–1.630 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.500–3.200 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.520–3.250 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.480–3.160 €</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch kpi">
+<caption class="title">Tabelle 5. Kosten nach Volumen, 10 Jahre kumuliert</caption>
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">10 Jahre, ca.</th>
+<th class="tableblock halign-right valign-top">Gleichbleibend</th>
+<th class="tableblock halign-right valign-top">Wachsend</th>
+<th class="tableblock halign-right valign-top">Rückläufig</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC + NAS + Kaltarchiv</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2.530–3.540 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2.680–3.690 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2.430–3.440 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reine Servermiete (nur Instanz)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">5.380–12.100 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">5.380–12.100 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">5.380–12.100 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + Storage-Services</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">6.720–15.190 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">7.520–17.020 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">6.250–14.110 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + gemanagte DB &amp; Storage</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">8.340–18.550 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">9.130–20.380 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">7.860–17.470 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">16.810–35.900 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">18.390–39.070 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">15.860–34.010 €</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Im ersten Jahr wirkt sich das Belegvolumen kaum auf die Gesamtkosten aus: Beim eigenen Server dominieren die einmaligen Anschaffungskosten (CapEx), bei den Cloud-Modellen die festen Monats- bzw. Plattformgebühren. Erst über mehrere Jahre schlägt das kumulierte Daten- und Snapshotvolumen in den Cloud-Modellen spürbar durch.</p>
+</div>
+<div class="paragraph">
+<p>Beim eigenen Server ändern sich die Kosten kaum: Auch wachsend bleibt der Bestand bei ca. 43 GB (ca. 85–130 GB inkl. Sicherung), die üblichen Festplatten reichen. In der Cloud verursacht jede weitere Rechnung dauerhaft Speicher- und Sicherungsgebühren; sinkt das Volumen, sinken auch die Kosten.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="realitaetscheck"><a class="anchor" href="#realitaetscheck"></a><a class="link" href="#realitaetscheck">4. Preisentwicklung</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Die Modellrechnung unterstellt 2,5 % Preissteigerung pro Jahr. In der Praxis erfolgten Preisänderungen häufig sprunghaft.</p>
+</div>
+<div class="paragraph">
+<p>Ausgewählte Beispiele:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Hetzner, 2026:</strong> zum 1. April höhere Preise auch für Bestandskunden <a href="#q6">[Q6]</a>; danach erneute Erhöhung für neu bestellte Cloud- und dedizierte Server, bei einzelnen Modellen bis ca. 200 %, begründet mit gestiegenen Hardwarekosten <a href="#q10">[Q10]</a>.</p>
+</li>
+<li>
+<p><strong>Microsoft Azure, 2023:</strong> Preise in Euro rund 11 % höher (Angleichung an die US-Dollar-Preise), ab 1. April 2023 <a href="#q8">[Q8]</a>.</p>
+</li>
+<li>
+<p><strong>Google Cloud, 2022:</strong> ab 1. Oktober 2022 neue Replikationsgebühren bei Cloud Storage, Lesezugriffe aus Multi-Region-Buckets nicht mehr kostenlos, Standard-Snapshots von 0,026 auf 0,05 (regional) bzw. 0,065 USD je GB und Monat (multiregional) <a href="#q9">[Q9]</a> <a href="#q7">[Q7]</a>.</p>
+</li>
+<li>
+<p><strong>AWS, Februar 2024:</strong> Einführung einer separaten Gebühr für alle öffentlichen IPv4-Adressen (0,005 USD je Stunde bzw. ca. 3,60 USD/Monat pro IP), auch für laufende EC2-Instanzen, die zuvor kostenfrei waren <a href="#q13">[Q13]</a>.</p>
+</li>
+<li>
+<p><strong>Verwaltete Plattformdienste (Kubernetes, Datenbanken):</strong> Bei Managed Services führten Cloud-Anbieter in den letzten Jahren zusätzliche Basisfixkosten ein (z. B. Cluster-Management-Gebühren für Control-Planes bei AWS EKS, Google GKE oder Azure AKS). Zudem werden ältere Datenbank- und Kubernetes-Versionen nach Ablauf regulärer Supportfristen mit drastischen "Extended Support"-Aufschlägen belegt (oft Verdoppelung der Stundenpreise, z. B. bei AWS RDS und AWS EKS), um Kunden zum Upgrade zu zwingen.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Bei 5 % statt 2,5 % pro Jahr liegen die 10-Jahres-Summen der Cloud-Modelle um ca. 12 % höher. Gestiegene Hardwarekosten treffen auch den eigenen Server: Die Modellrechnung setzt den Ersatz in Jahr 6 deshalb 20–30 % teurer an <a href="#q10">[Q10]</a>. Preise können auch sinken, etwa für Speicher; die Beispiele zeigen das Risiko sprunghafter Änderungen, nicht eine feste Richtung.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="betrieb"><a class="anchor" href="#betrieb"></a><a class="link" href="#betrieb">5. Betrieb und Wartung</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Dieser Abschnitt beschreibt den Personalaufwand, der nicht in den Kostensummen enthalten ist.</p>
+</div>
+<div class="sect2">
+<h3 id="_eigener_server_on_premise"><a class="anchor" href="#_eigener_server_on_premise"></a><a class="link" href="#_eigener_server_on_premise">5.1. Eigener Server (On-Premise)</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Erstes Halbjahr:</strong> monatliche Kontrolle von Systemzustand, Sicherung und Updates.</p>
+</li>
+<li>
+<p><strong>Ab Monat 7:</strong> Zwei geplante Wartungsfenster pro Jahr für manuelle Updates und Kontrollen (Neustart, Speicherplatz, Wiederherstellungstest, Hardware-Zustand).</p>
+</li>
+<li>
+<p><strong>Größere Umstellungen:</strong> nur beim Ablauf einer LTS-Version (typisch alle 3–5 Jahre) oder beim Hardware-Ersatz nach ca. 5 Jahren.</p>
+</li>
+<li>
+<p><strong>Sicherheit:</strong> Der Rechner steht im Firmennetz und ist nicht direkt aus dem Internet erreichbar. Erforderlich bleiben Updates und eine Sicherung außer Haus <a href="#q4">[Q4]</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cloud_betrieb"><a class="anchor" href="#_cloud_betrieb"></a><a class="link" href="#_cloud_betrieb">5.2. Cloud-Betrieb</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Managed Cloud mindestens wöchentlich, Servermiete monatlich (Festpreis):</strong> Kostenkontrolle (FinOps: Spitzen, ungenutzte Ressourcen, vergessene Snapshots) und technische Prüfung (Status, Zertifikate, Sicherungen, Versionsabläufe).</p>
+</li>
+<li>
+<p><strong>Geteilte Verantwortung:</strong> Der Cloud-Anbieter schützt Rechenzentrum und Grundtechnik. Sie schützen Zugänge, Einstellungen und Daten. Dazu gehören Prüfung der Zugriffsrechte (IAM), Endgeräte, nicht genehmigte Dienste (Shadow IT) und Schnittstellen (API).</p>
+</li>
+<li>
+<p><strong>Takt des Cloud-Anbieters und Zwangsmigrationen:</strong> Wartungsfenster und Versionszyklen bestimmt der Anbieter. Bei verwalteten Plattformdiensten (wie Managed Kubernetes oder gemanagten PostgreSQL-Datenbanken) führen enge Supportfristen (meist nur 12–14 Monate je Version) zu providergetriebenen Zwangsmigrationen ("Forced Upgrades"). Werden veraltete Versionen nicht rechtzeitig migriert, drohen automatische Updates mit Ausfallrisiko oder drastische Extended-Support-Aufschläge.</p>
+</li>
+<li>
+<p><strong>Servermiete:</strong> Der Cloud-Anbieter übernimmt die Hardware-Wartung, den Austausch defekter Komponenten (RAM, SSDs, Boards), automatisiertes Host-Failover und die Ausfallsicherheit der Speichermedien (Netzwerk-Storage). Betriebssystem, Updates und Anwendungs-Setup verbleiben bei Ihnen. Eine reine Servermiete wird selten allein gewählt: Die eigenständige Pflege und Absicherung der Datenbank ist aufwendig und fehlerträchtig. Üblich ist deshalb die Kombination mit Datenbank- und Storage-Services des Anbieters (automatisierte Snapshots, Ausfallsicherheit).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="aufwand"><a class="anchor" href="#aufwand"></a><a class="link" href="#aufwand">5.3. Aufwandsvergleich</a></h3>
+<div class="paragraph">
+<p>Aufwand in Personentagen (PT, 1 PT = 8 Stunden). Die Werte basieren auf praktischen Erfahrungswerten aus dem Realbetrieb.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 6. Personalaufwand pro Jahr</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Personentage pro Jahr, ca.</th>
+<th class="tableblock halign-right valign-top">Eigener Server</th>
+<th class="tableblock halign-right valign-top">Servermiete</th>
+<th class="tableblock halign-right valign-top">Managed Cloud</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kontrollen und Updates</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1–1,5 (nach Einlaufphase)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2–3</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1–2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kostenkontrolle (FinOps)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">entfällt</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">0,25–0,5 (Festpreis)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1,5–3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IT-Sicherheit</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,5</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2–4</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">2–3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Größere Umstellungen, auf ein Jahr umgelegt¹</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">0,5–1</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">0,5–1</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">0,5–2,5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Summe ca.</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>2–3</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>5–8,5</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>5–10</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Einmalig zum Start: Betriebskonzept &amp; Erstinstallation</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 3–5 PT; mit Referenzhardware und Betriebsskripten des Projekts ca. 0,5–1,5 PT³</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 14 PT, abhängig vom Cloud-Anbieter</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 14 PT, abhängig vom Cloud-Anbieter</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zusätzlich im ersten Halbjahr (Einlaufphase)²</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">0,75–1,5 einmalig</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ab 2,5–3 einmalig</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ab 2,5–3 einmalig</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>¹ Größere Umstellungen fallen nur alle paar Jahre an: Wechsel auf eine neue LTS-Version, Hardware-Ersatz nach ca. 5 Jahren, bei Cloud-Anbietern auch vorgegebene Versions- oder Tarifwechsel. Der Aufwand wird auf die Jahre verteilt, damit die Jahressumme vergleichbar bleibt. Beispiel: 3–5 PT alle 5 Jahre ergeben ca. 0,5–1 PT pro Jahr.</p>
+</div>
+<div class="paragraph">
+<p>² Eigener Server: Die niedrigen Werte (2–3 PT/Jahr, 0,75–1,5 PT Einlaufphase, 0,5–1,5 PT Einrichtung) basieren auf den realen Erfahrungswerten der Projektleitung. Sie gelten bei Verwendung der Referenzhardware oder standardisierter Betriebsskripte. Servermiete und Managed Cloud starten bei 2,5–3 PT; der Wert hängt vom Cloud-Anbieter ab.</p>
+</div>
+<div class="paragraph">
+<p>³ Einrichtung des eigenen Servers: Dazu gehören Fernzugang (VPN), Firewall, Notstromversorgung (USV) und eine Sicherung außer Haus. Die Spanne hängt davon ab, ob die Referenzhardware und die Betriebsskripte des Projekts verwendet werden oder eigene Hardware individuell eingerichtet wird.</p>
+</div>
+<div class="paragraph">
+<p><strong>Betriebskonzept und Erstinstallation in der Cloud:</strong> Vor dem Start braucht es ein Konzept für Zugänge und Rechte (IAM), Netzwerk und Verschlüsselung, Datensicherung und Wiederherstellung, Kostenalarme sowie die Zuordnung der Anwendungsdienste zu den Diensten des Cloud-Anbieters. Erste Schätzung: ca. 14 Personentage, stark abhängig vom Cloud-Anbieter. Beim eigenen Server sind es ca. 3–5 Personentage. Wer die vom Projekt erprobte Referenzhardware und die fertigen Betriebsskripte übernimmt, kommt mit ca. 0,5–1,5 Personentagen aus.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ausblick lokaler Betrieb (bis Q4/2027):</strong> Die Verwaltungswerkzeuge <code>lt</code> und <code>lhorse</code> sollen den lokalen Betrieb schrittweise vereinfachen, indem Routineaufgaben wie Updates, Datensicherung und Funktionsprüfung standardisiert und automatisiert werden. Das senkt den Wartungsaufwand und verbessert die Betriebsqualität; bei Servermiete wirken die Werkzeuge gleichermaßen, da sie denselben Software-Stack nutzt. Voraussetzung ist, dass die Werkzeuge von der Community weiterentwickelt und gepflegt werden. Die Werte in der Tabelle setzen diese Entlastung noch nicht voraus.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_auswirkung_auf_gesamtkosten"><a class="anchor" href="#_auswirkung_auf_gesamtkosten"></a><a class="link" href="#_auswirkung_auf_gesamtkosten">5.4. Auswirkung auf Gesamtkosten</a></h3>
+<div class="paragraph">
+<p>Die laufenden Personalkosten lassen sich über eine einfache Grundformel kalkulieren:</p>
+</div>
+<div class="paragraph text-center">
+<p><strong><em>Personalkosten pro Jahr = Personentage (PT) pro Jahr × Tagessatz</em></strong></p>
+</div>
+<div class="paragraph">
+<p>Für eine transparente kaufmännische Gesamtbetrachtung sind dabei vier praxisnahe Kernhinweise maßgeblich:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Personalkosten (Individuelle Kalkulation)</strong><br>
+Personalkosten sind in den Vergleichstabellen bewusst nicht beziffert: Tagessätze variieren je nach Region, Ausbildungsstand, Spezialisierung und Betreuungsstruktur (interne Betreuung vs. externes Systemhaus) erheblich. Betriebe ermitteln ihren standortspezifischen Betrag direkt durch Multiplikation des eigenen Tagessatzes mit den in obiger Tabelle ausgewiesenen Personentagen (PT).</p>
+</li>
+<li>
+<p><strong>Vollständiger Wegfall von Softwarelizenzen (Reiner Open-Source-Stack)</strong><br>
+Little Trotter setzt durchgängig auf lizenzkostenfreie Open-Source-Komponenten (Linux-Betriebssystem, PostgreSQL-Datenbank, RustFS-Objektspeicher, Valkey-Cache).</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Keine Lizenz- oder Abo-Gebühren:</strong> Weder beim lokalen PC-Betrieb noch in gemieteten Cloud-Umgebungen fallen Kosten für Windows-Server-Lizenzen, Client-Zugriffslizenzen (CALs), Core-Aufschläge für relationale Datenbanksysteme oder wiederkehrende Software-Abogebühren an.</p>
+</li>
+<li>
+<p><strong>Reine Infrastruktur- und Servicefinanzierung:</strong> Sämtliche Investitionen und Monatsbudgets fließen ausschließlich in die physische Hardware bzw. die gemietete Infrastruktur sowie die personelle Betreuung.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Hardware-Administration und Managed Services versus FinOps-Aufwand</strong><br>
+Ein wesentlicher Vorzug gemieteter Umgebungen liegt in der Auslagerung technischer Basispflichten:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Hardware-Administration voll eingepreist:</strong> Sowohl bei der reinen Servermiete als auch in der Managed Cloud ist die gesamte Administration der physischen Hardware (Austausch defekter Festplatten, SSDs und RAM-Riegel, Kühlung, redundante Stromversorgung und Host-Failover) <strong>vollständig in den monatlichen Mietpreisen enthalten</strong>.</p>
+</li>
+<li>
+<p><strong>Gemanagte Plattformdienste:</strong> In der Managed Cloud übernimmt der Anbieter darüber hinaus die Pflege der Services selbst (automatisiertes Patching, gemanagte Datenbank-Wartung, automatisierte Backups und Point-in-Time-Snapshots).</p>
+</li>
+<li>
+<p><strong>Risiken bei Managed Services (Gebühren &amp; Zwangsmigrationen):</strong> Bei verwalteten Plattformdiensten (wie gemanagten Kubernetes-Clustern oder Cloud-Datenbanken) besteht das Risiko unvorhergesehen steigender Grund- und Zusatzgebühren (etwa neu eingeführte Cluster-Management-Pauschalen oder Mindestinstanzgrößen). Zudem diktiert der Cloud-Anbieter die Versionszyklen: Erreichen Kubernetes- oder Datenbank-Versionen ihr Supportende (oft bereits nach 12–14 Monaten), erzwingt der Provider <strong>Zwangsmigrationen</strong> (Forced Upgrades) auf neuere Major-Versionen – verbunden mit ungeplantem Aufwand für Regressionstests oder drastischen "Extended Support"-Aufschlägen.</p>
+</li>
+<li>
+<p><strong>Realer Aufwand für FinOps und Service-Anpassungen:</strong> Praxiserfahrungen zeigen daher, dass die Cloud den Personalaufwand nicht eliminiert: Durch kontinuierliches <strong>FinOps</strong> (wöchentliche Kostenkontrolle, Aufspüren ungenutzter Instanzen oder verwaister Snapshots zur Vermeidung von Abrechnungsspitzen) sowie die laufende Anpassung von Schnittstellen, Zertifikaten und IAM-Zugriffsrechten entsteht in der Praxis ein administrativer Zeitaufwand, der den der lokalen PC-Variante übersteigen kann. Managed Services senken dagegen den Aufwand für Updates und Datenbankpflege.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Stärken der Cloud: Infrastrukturelle Ausfallsicherheit und elastische Skalierbarkeit</strong><br>
+Die Cloud besitzt spezifische architektonische Vorzüge, die lokal kaum nachzubilden sind:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Bauliche Ausfallsicherheit:</strong> Professionelle Rechenzentren verfügen über mehrfache redundante Internetanbindungen (Carrier-Redundanz), Notstromaggregate und Brandmeldeanlagen, die im lokalen Büroumfeld nicht wirtschaftlich realisierbar sind.</p>
+</li>
+<li>
+<p><strong>Elastische Skalierbarkeit bei variablen Lastspitzen:</strong> Verlangt das Geschäftsmodell eines Unternehmens dynamische Skalierung – etwa bedingt durch extreme Saisonspitzen (Vorweihnachtsgeschäft, Black-Friday-Aktionen oder tourismusbedingte Buchungspeaks) –, lassen sich Rechenressourcen in der Cloud bedarfsgerecht innerhalb von Minuten hoch- und nach der Lastspitze wieder herunterfahren.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<div class="title">Kaufmännische Abwägung: Kein pauschales Richtig oder Falsch</div>
+<p>In der Gesamtbewertung existiert kein universelles Richtig oder Falsch, sondern eine bewusste Prioritätensetzung:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Eigener Server (Mini-PC):</strong> Bietet maximale Datenautonomie im Haus, transparente Einmalkosten und planbare, minimale Monatsabflüsse. Dies ist eine ideale, kosteneffiziente Lösung für Betriebe mit kontinuierlichem, gleichmäßigem Belegaufkommen und grundlegendem internem technischem Verständnis.</p>
+</li>
+<li>
+<p><strong>Servermiete / Managed Cloud:</strong> Bietet bequeme Standortunabhängigkeit ohne physischen Hardwarekontakt, professionelle Rechenzentrums-Ausfallsicherheit und sofortige Elastizität bei saisonalen Spitzen – erkauft dies jedoch durch kontinuierliche Monatskosten und die Notwendigkeit laufender Kosten- und Rechtekontrolle (FinOps).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Geltung der Modellrechnung:</strong> Diese Modellrechnung dient zur Verdeutlichung der Vor- und Nachteile der verschiedenen Betriebsverfahren. Sie ersetzt keine exakte Planung und Auswahl anhand der jeweils gültigen Konditionen der entsprechenden Cloud-Provider und IT-Systemhäuser.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Gerätetausch und Migration:</strong> Der Tausch eines Mini-PCs dauert Minuten; der Aufwand liegt in Neuinstallation und Datenrücksicherung und fällt bei einem Wechsel des Cloud-Anbieters genauso an (siehe <a href="#migration">„Gerätetausch und Migrationsaufwand“</a>).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_erfahrungswerte_und_schrittweise_einführung"><a class="anchor" href="#_erfahrungswerte_und_schrittweise_einführung"></a><a class="link" href="#_erfahrungswerte_und_schrittweise_einführung">5.5. Erfahrungswerte und schrittweise Einführung</a></h3>
+<div class="paragraph">
+<p>Die im Modell für den Vor-Ort-Betrieb (On-Premise) ausgewiesenen geringen Personalaufwände (2–3 PT pro Jahr bzw. 0,75–1,5 PT in der Einführungsphase) beruhen auf den praktischen Erfahrungswerten der Projektleitung. Ziel dieses praxisnahen Vorgehens ist es, administrativen Aufwand im Alltag von vornherein gering zu halten:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Erfahrung der Projektleitung und der Entwicklungs-Community:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Bereits in der Einführung sowie im laufenden Betrieb senken praxiserprobte Abläufe und vorgefertigte Betriebsskripte den Betreuungsaufwand spürbar.</p>
+</li>
+<li>
+<p>Anwendende und betreibende Unternehmen profitieren direkt von den praktischen Erkenntnissen der Projektleitung und dem laufenden Austausch innerhalb der Community, wodurch typische Anfangsfehler vermieden werden.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Vorteil bekannter, bewährter Standard-Hardware (Mini-PC):</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Der Einsatz gut evaluierter Standardkomponenten (wie ein leiser, lüfterloser modularer Mini-PC im Kompaktformat in Verbindung mit einem lokalen Speicher) bietet verlässliche Planbarkeit: Energiebedarf, Wärmeentwicklung und Treiberschnittstellen sind im Vorfeld bekannt.</p>
+</li>
+<li>
+<p>Es wird keine kostspielige Spezialhardware benötigt; Installations- und Konfigurationsaufwände reduzieren sich auf das Wesentliche. Ein Hardwaretausch ist bei Bedarf steckbar und ohne Spezialwerkzeuge eigenständig durchführbar.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Wartungsrhythmus im laufenden Betrieb:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Im Regelbetrieb genügen typischerweise <strong>zwei größere Wartungsfenster pro Jahr</strong>, die sich planbar außerhalb der Bürozeiten durchführen lassen (beispielsweise für grundlegende System- und Plattformupgrades).</p>
+</li>
+<li>
+<p>Kleinere Aktualisierungen und Fehlerbehebungen erfolgen zeitnah und bedarfsorientiert, sobald sicherheitskritische Neuerungen der Softwarekomponenten vorliegen.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Zweistufige Einführung:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Phase 1 (Operativer Einstieg):</strong> Schlanke, gut verständliche Skripte für Datensicherung, Container-Verwaltung und Funktionsüberprüfungen gewährleisten einen stabilen Start mit minimaler Komplexität.</p>
+</li>
+<li>
+<p><strong>Phase 2 (Verwaltungswerkzeuge):</strong> <code>lt</code> und <code>lhorse</code> ergänzen die Skripte, siehe Ausblick im <a href="#aufwand">Aufwandsvergleich</a>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Einordnung der Cloud-Skalierbarkeit (Saisonlast vs. kontinuierlicher Betrieb):</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Die dynamische Skalierbarkeit von Cloud-Umgebungen – also das bedarfsgerechte Hoch- und Herunterfahren zusätzlicher Serverinstanzen bei Lastspitzen – ist ein geschätzter Vorteil für Geschäftsmodelle mit ausgeprägter Saisonlast (etwa im E-Commerce zum Jahresende oder im Buchungswesen).</p>
+</li>
+<li>
+<p>Bei der Zielgruppe von Little Trotter (Handwerksbetriebe, freiberuflich Tätige und Dienstleistungsunternehmen) spielt dieser Aspekt in der Praxis kaum eine Rolle: Das Rechnungsvolumen ist über das Jahr weitgehend stabil oder folgt gut planbaren Projektzyklen. Eine solide lokale Hardware deckt sowohl das tägliche Grundvolumen als auch gelegentliche Monatsabschlüsse ohne jede Notwendigkeit für dynamische Cloud-Ressourcen vollständig ab.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sicherheit_datenschutz_abhängigkeit"><a class="anchor" href="#_sicherheit_datenschutz_abhängigkeit"></a><a class="link" href="#_sicherheit_datenschutz_abhängigkeit">6. Sicherheit, Datenschutz und Abhängigkeit</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Beide Betriebswege verbinden systemspezifische Stärken mit Eigenverantwortung. Das tatsächliche Gewicht der Faktoren hängt von der Infrastruktur und den personellen Kompetenzen im Betrieb ab.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 7. Sicherheit, Datenschutz und Abhängigkeit im Vergleich</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Thema</th>
+<th class="tableblock halign-left valign-top">Eigener Server</th>
+<th class="tableblock halign-left valign-top">Cloud</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datenschutz (DSGVO)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Belege und Sicherungen bleiben physisch im Haus; kein Auftragsverarbeitungsvertrag (AVV) für den Kernbetrieb erforderlich. Für eine Sicherung außer Haus bei einem Cloud-Anbieter oder für Fernwartung durch ein IT-Systemhaus ist ein AVV nötig.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auftragsverarbeitungsvertrag zwingend erforderlich. Bei Cloud-Anbietern mit Sitz außerhalb der EU sind Zugriffsrisiken (z. B. CLOUD Act) sorgfältig zu prüfen, auch bei ausschließlicher Nutzung von EU-Regionen.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lock-in &amp; Migrationsaufwand</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sehr gering. Vollständige Datenhoheit, Software und Sicherungsdaten verbleiben im Betrieb. Bei Hardwaretausch oder Ersatzgerät beschränkt sich der Aufwand auf die Neuinstallation und das Rückspielen der Backups.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Servermiete:</strong> Dank standardisierter OCI-Container (Docker Compose) ist der Software-Lock-in gering und die Lösung 1:1 mit On-Premise austauschbar. Jedoch: Bei jedem Provider- oder Servicewechsel fällt derselbe Neuinstallations- und Migrationsaufwand wie On-Premise an.<br>
+<strong>Managed Cloud:</strong> Erheblicher Lock-in durch proprietäre Plattformdienste (spezifische IAM-, Speicher- und Datenbankdienste); ein Wechsel erfordert Neuarchitektur, Exportaufwände und Umkonfiguration. Zudem besteht das Risiko steigender Servicegebühren sowie providergetriebener Zwangsmigrationen bei auslaufenden Versionen (z. B. EOL-Zyklen bei Kubernetes oder gemanagten Datenbanken).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ausfallsicherheit &amp; Hardwaretausch</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Einzelne Geräte können ausfallen. Bei Verwendung marktüblicher modularer Mini-PCs im Kompaktformat ist der physische Hardwaretausch übersichtlich und für technisch versierte Personen eigenständig machbar. NAS-Spiegelung, ein vorkonfiguriertes Ersatzgerät und regelmäßige Wiederherstellungstests senken das Ausfallrisiko. Brand und Diebstahl erfordern eine verschlüsselte Sicherungskopie außer Haus <a href="#q4">[Q4]</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Das Hosting-Unternehmen übernimmt Hardware-Wartung, Austausch defekter Serverkomponenten und Host-Failover. Speichermedien (Netzwerk-Storage) sind repliziert. Gemanagte Datenbank- und Storage-Services sichern Daten zusätzlich über automatisierte Snapshots ab. Bei Providerstörungen, Kündigung oder Tarifanpassungen entsteht dennoch ein voller Migrations- und Installationsaufwand. Redundante Rechenzentren und Georedundanz verursachen deutliche Mehrkosten.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Know-how &amp; Administration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Geringer mechanischer Bedarf (Mini-PC-Tausch ist Plug &amp; Play). Notwendig ist administratives Verständnis für Betriebssystempflege, Sicherungsprüfung und Wiederherstellung. Standardisierte Betriebsskripte senken den laufenden Betreuungsaufwand.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Servermiete:</strong> Identischer Software- und Administrations-Stack wie On-Premise (Betriebsskripte und Verwaltungswerkzeuge 1:1 anwendbar); zusätzlich zwingend nötig: Netzwerk- und Firewall-Härtung sowie Absicherung gegen Angriffe aus dem Internet.<br>
+<strong>Managed Cloud:</strong> Spezialwissen für IAM-Rechteverwaltung, API-Sicherheit, Kostenalarme (FinOps) und Vertragsprüfung erforderlich.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Angriffsfläche</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gering im lokalen Firmennetz; aus dem Internet ist nur das VPN-Gateway für mobilen Zugriff erreichbar. Risiken im Büro: Schadsoftware im Firmennetz (Verschlüsselungstrojaner), Diebstahl, Stromausfall (USV erforderlich).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deutlich größer, da Instanzen oder Gateways öffentlich exponiert sind. Fehlkonfigurationen von Ports, Zugriffsrechten (IAM) oder API-Schlüsseln liegen in der Verantwortung des betreibenden Unternehmens und erfordern kontinuierliches Monitoring.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wachstum &amp; Skalierung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hardwarebeschaffung und Neuaufsetzen: Tage bis Wochen (Schätzung). Für das typische Belegvolumen kleiner und mittlerer Betriebe reicht solide Standardhardware über Jahre hinweg ohne Skalierungsengpässe aus.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ressourcen-Upgrade in Minuten bis Stunden (Schätzung). Vorteilhaft primär bei stark volatilen, unvorhersehbaren Lastspitzen (z. B. Saison-E-Commerce).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="migration"><a class="anchor" href="#migration"></a><a class="link" href="#migration">6.1. Gerätetausch und Migrationsaufwand</a></h3>
+<div class="paragraph">
+<p>Ein häufiges Missverständnis im Betriebsvergleich betrifft die Gleichsetzung von Hardwareausfall und Betriebsaufwand:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Physischer Gerätetausch:</strong> Bei der Nutzung von modularen Mini-PCs im Kompaktformat als Referenzhardware ist der Austausch defekter Hardware kein hochkomplexer Eingriff. Technisch versierte Personen oder IT-Verantwortliche können das Gerät innerhalb weniger Minuten austauschen und verkabeln.</p>
+</li>
+<li>
+<p><strong>Der eigentliche Aufwand liegt in der Migration und Neuinstallation:</strong> Der maßgebliche administrative Zeitaufwand entsteht durch das Aufsetzen des Betriebssystems, die Konfiguration der Container-Umgebung und das Einspielen der Datensicherung (PostgreSQL-Dump, Belegspeicher).</p>
+</li>
+<li>
+<p><strong>Identischer Aufwand beim Providerwechsel in der Cloud:</strong> Dieser Migrations- und Installationsaufwand wird durch einen Wechsel in die Cloud nicht beseitigt. Kündigt ein Cloud-Anbieter Tarife ab, ändert seine Schnittstellen, erhöht die Preise drastisch oder wechselt das Unternehmen den Hosting-Anbieter, fällt genau derselbe Aufwand für die Neuinstallation, die Konfigurationsanpassung und die Datenmigration an wie beim Austausch eines lokalen Servers.</p>
+</li>
+<li>
+<p><strong>Gemeinsamer DevOps-Werkzeugkasten:</strong> Da sowohl der On-Premise-Betrieb als auch die Servermiete dieselbe standardisierte Container-Architektur nutzen, profitieren beide Modelle von denselben Betriebsskripten und Verwaltungswerkzeugen.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vor_und_nachteile"><a class="anchor" href="#_vor_und_nachteile"></a><a class="link" href="#_vor_und_nachteile">7. Vor- und Nachteile</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Jedes Modell verbindet eine bestimmte Kostenstruktur mit einem bestimmten Maß an Eigenverantwortung.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch proscons">
+<caption class="title">Tabelle 8. Stärken und Schwächen je Modell</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Modell</th>
+<th class="tableblock halign-left valign-top">Stärken</th>
+<th class="tableblock halign-left valign-top">Schwächen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Niedrige Gesamtkosten, Datenhoheit, schneller Zugriff im Büronetz, wenig Wartung nach Einlaufphase</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hohe Anfangskosten, Neukauf nach 5–6 Jahren, Ausfallrisiko, eigene Sicherung, erforderliches Know-how</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete (mit DB- &amp; Storage-Services)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keine Hardware-Investition, feste Monatskosten für Server, Anbieter übernimmt Hardware-Wartung, Komponententausch und Host-Failover; hohe Medien-Ausfallsicherheit und automatisierte Snapshots durch gemanagte Zusatzdienste</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Laufende Kosten, kein Restwert; reine Servermiete ohne Zusatzdienste birgt hohen Eigenaufwand für DB-Administration und Datensicherung (daher selten isoliert gewählt); Preisanpassungen des Anbieters möglich</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keine Anfangsinvestition, Hardwaretausch und Dienstverwaltung (Datenbank, Speicher, Updates) durch den Cloud-Anbieter, flexibel, Ausfallsicherheit, wenig Technikwissen erforderlich</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Höchste laufende Kosten, schwer planbare Abrechnung, Gebühren wie Egress, Lock-in, Aufwand für Kosten- und Rechteverwaltung</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_speicher_belege_co2e"><a class="anchor" href="#_speicher_belege_co2e"></a><a class="link" href="#_speicher_belege_co2e">8. Speicher, Belege und CO₂e</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Ein Beleg wird mehrfach kopiert und über Jahre gespeichert; das bestimmt Speicherbedarf und Kosten.</p>
+</div>
+<div class="sect2">
+<h3 id="_weg_eines_belegs"><a class="anchor" href="#_weg_eines_belegs"></a><a class="link" href="#_weg_eines_belegs">8.1. Weg eines Belegs</a></h3>
+<div class="paragraph">
+<p>Als <strong>Hop</strong> gilt ein Übertragungsschritt zwischen zwei Systemen <a href="#q5">[Q5]</a>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 9. Stationen eines Belegs</caption>
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Hop</th>
+<th class="tableblock halign-left valign-top">Von → nach</th>
+<th class="tableblock halign-left valign-top">Station</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Versendende Anwendung → Mailserver</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mail, per TLS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mailserver Versand → Mailserver Empfang</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internet</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mailserver Empfang → Postfach</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zustellung (IMAP)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eingangssystem → Rechnungsarchiv</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Archivübernahme</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Mindestens vier dauerhafte Fassungen entstehen (Speicher und Sicherung im versendenden Betrieb, Archiv und Sicherung im empfangenden Betrieb). Mit Generationenprinzip (Tages-, Monats-, Jahresstände) und Spiegelung rechnet das Modell mit 4–6 Fassungen insgesamt, davon 2–3 im versendenden Betrieb. Kosten trägt jede Seite nur für ihre eigenen Fassungen. Ein Beleg bindet so über Jahre ein Vielfaches seiner Größe.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_datensicherung_und_gesetzliche_belegaufbewahrung_8_jahre"><a class="anchor" href="#_datensicherung_und_gesetzliche_belegaufbewahrung_8_jahre"></a><a class="link" href="#_datensicherung_und_gesetzliche_belegaufbewahrung_8_jahre">8.2. Datensicherung und gesetzliche Belegaufbewahrung (8 Jahre)</a></h3>
+<div class="paragraph">
+<p>Little Trotter ist kein Dokumenten-Management-System und kein Archiv. Die gesetzliche Aufbewahrungsfrist für Rechnungen und kaufmännische Belege beträgt acht Jahre.</p>
+</div>
+<div class="paragraph">
+<p><strong>Wie die Frist im Betrieb praktisch funktioniert:</strong><br>
+Die Aufbewahrungsfrist beginnt nicht auf den Tag genau, sondern läuft erst mit dem Schluss des Kalenderjahres an, in dem die Rechnung ausgestellt wurde. Sie endet nach vollen acht Kalenderjahren.
+Ein konkretes Beispiel: Eine Rechnung aus dem März 2026 muss bis zum 31. Dezember 2034 aufbewahrt werden. Am 1. Januar 2035 – dem gesetzlichen Stichtag – ist die Frist für den gesamten Jahrgang 2026 abgelaufen. Ältere Jahrgänge werden dann planmäßig aus dem Primärspeicher entfernt.</p>
+</div>
+<div class="paragraph">
+<p><strong>Auswirkung auf den Speicher:</strong><br>
+Im laufenden Betrieb liegen deshalb höchstens neun Rechnungsjahrgänge im Primärsystem: acht abgeschlossene, deren Frist noch läuft, und das laufende Jahr. Während die Gesamtkostenrechnung aus kaufmännischer Sicht über zehn Jahre kalkuliert wird, erreicht der reale Speicherbedarf für Belege nach acht bis neun Jahren ein stabiles Plateau (Gleichgewichtszustand aus neu hinzukommenden und gelöschten Altjahrgängen).</p>
+</div>
+<div class="paragraph">
+<p>Für die Datensicherung verweist das BSI im IT-Grundschutz-Baustein CON.3 auf ein Datensicherungskonzept, regelmäßige Sicherungen, geprüfte Wiederherstellbarkeit und die räumlich getrennte Aufbewahrung der Sicherungen <a href="#q4">[Q4]</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rechenbeispiel"><a class="anchor" href="#rechenbeispiel"></a><a class="link" href="#rechenbeispiel">8.3. Belegszenarien</a></h3>
+<div class="paragraph">
+<p>In der Praxis variieren Rechnungsanhänge erheblich. Um sowohl für den betrieblichen Alltag (z.&#160;B. Handwerksbetrieb, freie Berufe) als auch für anspruchsvolle IT-Planungen (Worst-Case-Stresstest für Datensicherung und Mail-Gateways) verlässliche Orientierung zu bieten, werden drei praxisnahe Belegszenarien unterschieden.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 10. Typische Belegszenarien im Vergleich</caption>
+<colgroup>
+<col style="width: 18.1818%;">
+<col style="width: 18.1818%;">
+<col style="width: 18.1818%;">
+<col style="width: 18.1818%;">
+<col style="width: 27.2728%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Szenario</th>
+<th class="tableblock halign-left valign-top">Belegumfang (Art der Belege)</th>
+<th class="tableblock halign-left valign-top">Größe unreduziert</th>
+<th class="tableblock halign-left valign-top">Größe im System (nach 0,8&#160;MB-Budget)</th>
+<th class="tableblock halign-left valign-top">Praxiswirkung &amp; Mailversand</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>1. Typischer Alltag</strong><br>
+(Handwerk, Dienstleistung, Beratung)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2–4 Belege<br>
+(1x Stundennachweis, 1–2x Material- oder Tankquittung)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 6–12 MB<br>
+(Schnitt ca. 8 MB)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ca. 1,8–3,5 MB</strong><br>
+(Schnitt ca. 2,5 MB)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Problemloser Mailversand; passiert alle Gateways (10–25 MB Limit) und ZRE/OZG-RE ohne Engpass.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>2. Umfangreiches Projekt</strong><br>
+(Bau, Montage, Großauftrag)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5–8 Belege<br>
+(Laufzettel, Wiegescheine, Hotelbelege, Fahrten)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 15–25 MB<br>
+(Schnitt ca. 20 MB)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ca. 4,5–7,0 MB</strong><br>
+(Schnitt ca. 5,5 MB)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sicher innerhalb üblicher Provider-Limits; unreduziert drohen bei manchen Empfangssystemen bereits Mail-Bounces.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>3. Worst-Case-Stresstest</strong><br>
+(Maximalauslastung)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bis zu 19 Belege<br>
+(hochauflösende Farbscans / Handyfotos)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 49 MB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ca. 6,0–15,5 MB</strong><br>
+(max. 20 MB Systemgrenze)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unreduziert per E-Mail unzustellbar (<code>552 Message size exceeds maximum</code>); durch 0,8&#160;MB-Normalisierung zustellbar.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+<strong>Systemische Obergrenze:</strong> Little Trotter begrenzt E-Rechnungen inklusive XML und aller Belege strikt auf <strong>maximal 20 MB</strong> (<a href="arc42-docs.html#adr-014">ADR-014</a>). Größere Gesamtdokumente werden vor der Festschreibung gemeldet und nicht erzeugt.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_einsparung_durch_belegreduktion"><a class="anchor" href="#_einsparung_durch_belegreduktion"></a><a class="link" href="#_einsparung_durch_belegreduktion">8.3.1. Einsparung durch Belegreduktion</a></h4>
+<div class="paragraph">
+<p>Je Rechnung spart die Reduktion ca. 5,5 MB (typischer Alltag) bzw. ca. 43 MB (Worst Case). Hochgerechnet gilt: <strong>Einsparung × Anzahl Rechnungen × Fassungen</strong>. Der versendende Betrieb hält 2–3 Fassungen (Speicher und Sicherungen), zusammen mit der Empfangsseite sind es 4–6. Beispiel typischer Alltag mit 1.500 Rechnungen: ca. 8 GB pro Jahr, im versendenden Betrieb mit Sicherungen ca. 16–25 GB. Die Kosten- und CO₂e-Rechnung in <a href="#co2kosten">„Kosten und CO₂e über 10 Jahre“</a> rechnet wie das übrige Dokument mit den reduzierten Größen; ohne Reduktion wären die Werte etwa um den Kompressionsfaktor (ca. 3 bzw. 8) höher.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_speicherbedarf_im_system_8_jahrgänge"><a class="anchor" href="#_speicherbedarf_im_system_8_jahrgänge"></a><a class="link" href="#_speicherbedarf_im_system_8_jahrgänge">8.4. Speicherbedarf im System (8 Jahrgänge)</a></h3>
+<div class="paragraph">
+<p>Die Tabelle zeigt acht abgeschlossene Jahrgänge. Bewertet wird mit dem typischen Alltag (Ø 2,5 MB je Rechnung); der Worst Case (6 MB) dient nur der Dimensionierung von Platten und Sicherung. Mit dem laufenden Jahr liegt der Höchststand um bis zu einen Jahrgang (ca. 12 %) höher.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Datenbank (PostgreSQL):</strong> ca. 15–20 KB je Rechnung, dazu Kundenstammdaten (wenige MB).</p>
+</li>
+<li>
+<p><strong>Objektspeicher (RustFS):</strong> fertige PDF-Dateien mit eingebettetem XML. Sie bestimmen das Datenvolumen maßgeblich.</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 11. Speicherbedarf im System nach Volumen (8 Jahre rollierender Bestand)</caption>
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">8 Jahre rollierend</th>
+<th class="tableblock halign-right valign-top">Gleichbleibend (12.000 Rg.)</th>
+<th class="tableblock halign-right valign-top">Wachsend (+10 %, ca. 17.150 Rg.)</th>
+<th class="tableblock halign-right valign-top">Rückläufig (−10 %, ca. 8.540 Rg.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Datenbank (PostgreSQL)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,2–0,3 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,3–0,4 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,15–0,2 GB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock"><strong>Typischer Alltag (ca. 2,5 MB je Rechnung im System)</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rechnungs- und Belegdateien</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 30 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 43 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 21 GB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Systembedarf gesamt (Primär)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>ca. 30 GB</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>ca. 43 GB</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>ca. 21 GB</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inkl. Sicherung (2–3 Fassungen im versendenden Betrieb)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 60–90 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 85–130 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 40–65 GB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock"><strong>Worst-Case-Stresstest (ca. 6,0 MB je Rechnung im System)</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rechnungs- und Belegdateien</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 72 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 103 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 51 GB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Systembedarf gesamt (Primär)</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>ca. 72 GB</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>ca. 103 GB</strong></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>ca. 51 GB</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inkl. Sicherung (2–3 Fassungen im versendenden Betrieb)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 145–215 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 205–310 GB</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 100–155 GB</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+Die Datenbank macht weniger als 1 % aus; bei Platzmangel sind allein die Originalbelege maßgeblich. Rechnungsjahrgänge, deren gesetzliche Aufbewahrungsfrist abgelaufen ist, werden planmäßig zum Stichtag entfernt.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Speicher wird beim eigenen Server einmalig bezahlt, in der Cloud monatlich; der Unterschied wächst mit der Zahl der Sicherungsstände.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="co2kosten"><a class="anchor" href="#co2kosten"></a><a class="link" href="#co2kosten">8.5. Kosten und CO₂e über 10 Jahre</a></h3>
+<div class="paragraph lead">
+<p>Mit reduzierten Belegen bleibt Speicher in jeder Betriebsform ein Nebenposten: in der Cloud ca. 1 % der 10-Jahres-Kosten, beim eigenen Server ohne Mehrkosten. Für die Bewertung der Betriebsformen zählen die festen Kosten für Server, Datenbank und Betrieb.</p>
+</div>
+<div class="paragraph">
+<p>Basis: 1.500 Rechnungen pro Jahr, Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung, 2–3 Sicherungsfassungen im versendenden Betrieb, Löschung nach Ablauf der 8-Jahres-Frist. Über 10 Jahre sind das im versendenden Betrieb ca. 0,37–0,55 TB-Jahre. Ohne Reduktion wären Speicher, Kosten und CO₂e etwa um den Kompressionsfaktor höher (siehe Hinweis <a href="#kompressionsfaktor">Kompressionsfaktor</a>). Rechenweg im <a href="#anhang">Anhang</a>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 12. Speicherkosten der Rechnungs- und Belegdateien im versendenden Betrieb, 10 Jahre</caption>
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Betriebsform</th>
+<th class="tableblock halign-right valign-top">Speicherkosten bei Ø 2,5 MB je Rechnung, Ø (Spanne)</th>
+<th class="tableblock halign-right valign-top">Anteil an Ø-Gesamtkosten 10 Jahre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server (Mini-PC + NAS + Kaltarchiv)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0 € (im Plattenbestand enthalten)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0 % von ca. 3.000 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete mit Storage-Services (auch mit gemanagter DB)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 100 € (45–165 €)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 1 % von ca. 12.600 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 330 € (130–530 €)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 1 % von ca. 26.400 €</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Der Durchschnitt (Ø) ist die Mitte der Spanne und dient dem Vergleich der Betriebsformen; die Gesamtkosten stammen aus dem <a href="#anhang">Rechenweg 10 Jahre je Modell</a>. In der Cloud entscheidet der Speicher nicht über die Wahl der Betriebsform. Nur zur Dimensionierung, nicht als Bewertungsgrundlage: Mit Worst-Case-Belegen (6 MB je Rechnung nach Reduktion) lägen die Speicherkosten bei ca. 250 € (Servermiete) bzw. ca. 800 € (Managed Cloud), höchstens ca. 3 %; beim eigenen Server reichen auch dann die üblichen Festplatten (ca. 145–215 GB inkl. Sicherung).</p>
+</div>
+<div id="kompressionsfaktor" class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Wichtig</div>
+</td>
+<td class="content">
+<div class="title">Kompressionsfaktor</div>
+<div class="paragraph">
+<p>Alle Bewertungen rechnen mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung. Kompressionsfaktor = Größe unreduziert ÷ Größe im System: im Durchschnitt ca. 8 MB ÷ 2,5 MB ≈ 3, bei großen Farbscans (Worst Case) ca. 49 MB ÷ 6 MB ≈ 8. Ohne Reduktion wären Speicherbestand, Speicherkosten und CO₂e entsprechend ca. 3- bzw. ca. 8-mal so hoch; in der Managed Cloud im Durchschnitt also ca. 1.050 € statt ca. 330 € (ca. 4 % statt 1 % der 10-Jahres-Kosten).</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Strom und CO₂e des Betriebs hängen nicht von der Beleggröße ab, nur der Belegspeicher. Dieser ist wie alle Bewertungen für Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung gerechnet.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 13. Geschätzter Stromverbrauch und CO₂e über 10 Jahre (versendender Betrieb)</caption>
+<colgroup>
+<col style="width: 27.2727%;">
+<col style="width: 18.1818%;">
+<col style="width: 18.1818%;">
+<col style="width: 18.1818%;">
+<col style="width: 18.1819%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Betriebsform</th>
+<th class="tableblock halign-right valign-top">Leistung im Mittel</th>
+<th class="tableblock halign-right valign-top">Strom, 10 Jahre</th>
+<th class="tableblock halign-right valign-top">CO₂e, Strom erneuerbar (Obergrenze)</th>
+<th class="tableblock halign-right valign-top">CO₂e, Strommix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server (Mini-PC + NAS)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 18–20 W</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 1.580–1.750 kWh</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">höchstens ca. 0,07–0,11 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,54–0,62 t</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete / Managed Cloud (Rechenleistung 8 vCPU, 16 GB RAM)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 45–90 W</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 3.950–7.900 kWh</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">höchstens ca. 0,17–0,50 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 1,4–2,8 t</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zusätzlich Belegspeicher in der Cloud (Lebenszyklus, Ø 2,5 MB je Rechnung)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top" colspan="2"><p class="tableblock">ca. 0,06–0,15 t</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Die gemietete Instanz braucht nach dieser Schätzung etwa 2,5- bis 4,5-mal so viel Strom wie der eigene Server. Der Grund: Ihr Anteil am Rechenzentrums-Server läuft dauerhaft mit, Kühlung und Stromverteilung kommen hinzu. Der Mini-PC läuft dagegen die meiste Zeit fast ohne Last. Mit erneuerbarem Strom liegen beide Betriebsformen bei unter 0,5 t in 10 Jahren. Im Strommix wird der Unterschied in absoluten Zahlen größer.</p>
+</div>
+<div class="paragraph">
+<p>Die Werte des Betriebs gelten unabhängig von der Beleggröße; der Belegspeicher ist mit Ø 2,5 MB je Rechnung gerechnet.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 14. Einordnung der CO₂e-Werte über 10 Jahre</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Wert</th>
+<th class="tableblock halign-right valign-top">CO₂e</th>
+<th class="tableblock halign-right valign-top">Pkw-Fahrt (Benzin)</th>
+<th class="tableblock halign-right valign-top">Buchenwald, 10 Jahre Bindung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server, Strom erneuerbar</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">höchstens ca. 0,07–0,11 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 400–670 km</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 6–10 m²</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eigener Server, Strommix</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,54–0,62 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 3.300–3.800 km</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 49–56 m²</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Rechenleistung, Strom erneuerbar</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">höchstens ca. 0,17–0,50 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 1.000–3.000 km</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 15–45 m²</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-Rechenleistung, Strommix</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 1,4–2,8 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 8.200–16.900 km</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 124–254 m²</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Belegspeicher in der Cloud (Ø 2,5 MB je Rechnung)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 0,06–0,15 t</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 370–940 km</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">ca. 6–14 m²</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Die Vergleiche veranschaulichen Größenordnungen; sie sind keine Kompensationsrechnung. Pkw: ca. 165 g je Personenkilometer <a href="#q3">[Q3]</a>. Buchenwald: ca. 11 t CO₂ je Hektar und Jahr Bruttozuwachs vor Holzernte <a href="#q11">[Q11]</a>; seit 2017 ist der deutsche Wald insgesamt keine Kohlenstoffsenke mehr <a href="#q12">[Q12]</a>. Werte je Einzelbaum sind nicht belastbar belegt, weil sie stark von Alter und Standort abhängen.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Wichtig</div>
+</td>
+<td class="content">
+<div class="title">Vergleichbarkeit</div>
+<div class="paragraph">
+<p>Betrieb und Cloud-Rechenleistung enthalten nur Strom, keine Herstellung der Hardware; der Belegspeicher enthält den Lebenszyklus <a href="#q2">[Q2]</a>. Die Cloud-Rechenleistung ist eine Näherung aus Messdaten zweier Behörden-Rechenzentren (Rechenweg im <a href="#anhang">Anhang</a>); gemanagte Datenbank und Storage-Dienste fehlen. Die Cloud ist nicht automatisch klimagünstiger <a href="#q15">[Q15]</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Strom erneuerbar:</strong> Für Rechenzentren in Deutschland gilt das ab 2027 gesetzlich, bilanziell zu 100 % <a href="#q16">[Q16]</a>. Für den eigenen Server ist ein Ökostrom-Tarif angenommen, tagsüber ergänzt durch eigene Photovoltaik. Auf beiden Seiten gilt derselbe Obergrenzen-Faktor.</p>
+</li>
+<li>
+<p><strong>Eigener Server:</strong> Angenommen ist ein Ökostrom-Tarif, tagsüber ergänzt durch eigene Photovoltaik. Bilanziell verursacht Ökostrom nahezu kein CO₂; als Obergrenze ist der Lebenszyklus einer Photovoltaikanlage angesetzt (43–63 g CO₂e je kWh) <a href="#q17">[Q17]</a>. Wie bei Rechenzentren gilt: „Bilanziell“ heißt über Herkunftsnachweise, der physische Strommix im Netz ändert sich nicht unmittelbar. Zum Vergleich mit Netzstrom ist der Strommix 2024/2025 angesetzt (344–353 g CO₂ je kWh) <a href="#q14">[Q14]</a>.</p>
+</li>
+<li>
+<p><strong>Empfangsseite:</strong> Die Fassungen im empfangenden Betrieb verursachen etwa noch einmal dieselbe Menge CO₂e. Die Reduktion der Belege senkt also auch Emissionen außerhalb des eigenen Betriebs.</p>
+</li>
+<li>
+<p><strong>Datenübertragung:</strong> nicht enthalten; der Effekt ist im Vergleich zum Speicher klein.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="anhang"><a class="anchor" href="#anhang"></a><a class="link" href="#anhang">9. Anhang: Modellrechnung</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Der Anhang dokumentiert den Rechenweg. Er dient der Nachvollziehbarkeit, nicht der Genauigkeit; es bleibt eine Orientierungsrechnung.</p>
+</div>
+<div class="sect2">
+<h3 id="_zweck"><a class="anchor" href="#_zweck"></a><a class="link" href="#_zweck">9.1. Zweck</a></h3>
+<div class="paragraph">
+<p>Die Rechnung vergleicht Technikkosten dreier Betriebsmodelle für einen kleinen Betrieb mit 1.500 Rechnungen pro Jahr. Sie soll Größenordnungen und Kostenformen zeigen. Sie ist kein Angebot und keine Prognose.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_formel"><a class="anchor" href="#_formel"></a><a class="link" href="#_formel">9.2. Formel</a></h3>
+<div class="paragraph">
+<p>Die Jahreskosten steigen mit 2,5 % pro Jahr. Die Summe über 10 Jahre ist eine geometrische Reihe:</p>
+</div>
+<div class="formula">
+<div class="formula__row"><var>F</var> = <span class="frac"><span><var>q</var><sup>10</sup> − 1</span><span><var>q</var> − 1</span></span> = <span class="frac"><span>1,025<sup>10</sup> − 1</span><span>0,025</span></span> = <span class="frac"><span>1,28008 − 1</span><span>0,025</span></span> ≈ 11,2034</div>
+<div class="formula__row"><var>S</var><sub>10</sub> = <var>K</var><sub>1</sub> · <var>F</var></div>
+</div>
+<div class="ulist formula-legend">
+<ul>
+<li>
+<p><em>q</em> = 1 + Preissteigerung pro Jahr (hier 1,025)</p>
+</li>
+<li>
+<p><em>K</em><sub>1</sub> = laufende Kosten im ersten Jahr</p>
+</li>
+<li>
+<p><em>S</em><sub>10</sub> = Summe über 10 Jahre</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sensitivität bei 5 % pro Jahr:</p>
+</div>
+<div class="formula">
+<div class="formula__row"><var>F</var><sub>5 %</sub> = <span class="frac"><span>1,05<sup>10</sup> − 1</span><span>0,05</span></span> = <span class="frac"><span>1,62889 − 1</span><span>0,05</span></span> ≈ 12,5779</div>
+</div>
+<div class="paragraph">
+<p>Für den eigenen Server gilt:</p>
+</div>
+<div class="formula">
+<div class="formula__row"><var>S</var><sub>10</sub> = <var>A</var> + <var>E</var><sub>1</sub> · <var>F</var> + <var>R</var></div>
+</div>
+<div class="ulist formula-legend">
+<ul>
+<li>
+<p><em>A</em> = Anschaffung</p>
+</li>
+<li>
+<p><em>E</em><sub>1</sub> = Strom im ersten Jahr</p>
+</li>
+<li>
+<p><em>R</em> = Ersatz, einmal ca. in Jahr 6, nicht indexiert</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Annahmen: Der Mini-PC wird nach 5–6 Jahren ersetzt, 20–30 % teurer als bei der Anschaffung; beim NAS werden beide Festplatten getauscht (150–250 €). Ersatz und Anschaffung sind nicht indexiert.</p>
+</div>
+<div class="paragraph">
+<p>Alle Beträge gelten für Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 15. Rechenweg 10 Jahre je Modell (<em>F</em> = 11,2034)</caption>
+<colgroup>
+<col style="width: 23.0769%;">
+<col style="width: 15.3846%;">
+<col style="width: 15.3846%;">
+<col style="width: 15.3846%;">
+<col style="width: 15.3846%;">
+<col style="width: 15.3847%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Modell</th>
+<th class="tableblock halign-right valign-top">Anschaffung <em>A</em></th>
+<th class="tableblock halign-right valign-top">Laufend Jahr 1 (<em>K</em><sub>1</sub> bzw. <em>E</em><sub>1</sub>)</th>
+<th class="tableblock halign-right valign-top">Laufend × <em>F</em></th>
+<th class="tableblock halign-right valign-top">Ersatz <em>R</em> (Jahr 6)</th>
+<th class="tableblock halign-right valign-top">Summe <em>S</em><sub>10</sub>, ca.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC (ohne Sicherung außer Haus)</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">600–800 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">30–40 € Strom</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">336–448 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">720–1.040 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>1.660–2.290 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC + Kaltarchiv</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">600–800 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">48–75 € Strom, Archiv</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">538–840 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">720–1.040 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>1.860–2.680 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC + NAS + Kaltarchiv</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">900–1.190 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">68–95 € Strom, Archiv</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">762–1.064 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">870–1.290 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>2.530–3.540 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reine Servermiete</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">480–1.080 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">5.378–12.099 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>5.380–12.100 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete beim Hyperscaler</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.200–1.560 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">13.444–17.477 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>13.440–17.480 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + Storage-Services</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">600–1.356 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">6.722–15.192 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>6.720–15.190 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + gemanagte DB &amp; Storage</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">744–1.656 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">8.335–18.553 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>8.340–18.550 €</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">1.500–3.204 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">16.805–35.896 €</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock">–</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>16.810–35.900 €</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_eingangswerte_und_herkunft"><a class="anchor" href="#_eingangswerte_und_herkunft"></a><a class="link" href="#_eingangswerte_und_herkunft">9.3. Eingangswerte und Herkunft</a></h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 16. Eingangswerte und Herkunft</caption>
+<colgroup>
+<col style="width: 37.5%;">
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Wert</th>
+<th class="tableblock halign-left valign-top">Größe</th>
+<th class="tableblock halign-left valign-top">Herkunft</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC (Gerät)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 600–800 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung nach üblichen Marktpreisen, keine Einzelquelle. Referenz: 8 Kerne / 16 Threads, 16 GB RAM. Mindestanforderung der Anwendung 8 GB RAM, empfohlen 12–16 GB; alle Cloud-Varianten sind mit derselben Leistung gerechnet</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NAS inkl. Festplatten</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 300–390 € zusätzlich (Summe 900–1.190 €)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung, wie oben</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ersatz Hardware (Jahr 6)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC 720–1.040 €, Mini-PC + NAS 870–1.290 €</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung: Mini-PC nach 5–6 Jahren neu, 20–30 % teurer als bei der Anschaffung (gestiegene Hardwarekosten <a href="#q10">[Q10]</a>). NAS läuft weiter, Tausch beider Festplatten ca. 150–250 €</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stromverbrauch</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mini-PC ca. 10–13 W, Mini-PC + NAS ca. 18–20 W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung, Dauerbetrieb</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Strompreis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 0,30–0,35 €/kWh</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung, Haushalts-/Kleingewerbepreis, auch für Ökostrom-Tarife üblich. Ergibt ca. 30–40 € bzw. 50–60 € pro Jahr. Eigener Photovoltaik-Strom senkt die Kosten, wird aber nicht eingerechnet (vorsichtige Annahme)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reine Servermiete (Compute only)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 40–90 €/Monat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vergleichbare Leistung (8 vCPU bzw. Kerne, 16 GB RAM) bei europäischen Anbietern, Stand Oktober 2026: unteres Ende mit 12 Monaten Laufzeitbindung, oberes Ende stundengenau abgerechnete Cloud-Instanzen; Preisanpassungen siehe <a href="#q6">[Q6]</a> <a href="#q10">[Q10]</a>. Automatisches Host-Failover und replizierter Speicher sind nicht bei jedem Angebot enthalten. Wird in der Praxis selten allein gewählt, da Datenbank, Snapshots und Absicherung unvollständig bleiben</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete beim Hyperscaler</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 100–130 €/Monat (3 Jahre Laufzeitbindung)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Querschnitt dreier großer internationaler Anbieter, Region Frankfurt, Linux, 8 vCPU mit 16–32 GB RAM, Stand Oktober 2026 (Preislisten der Anbieter; 1 € = 1,1206 USD, EZB-Referenzkurs 09.10.2026). Mit dreijähriger Laufzeitbindung ca. 113–143 USD = ca. 100–130 € pro Monat. Ohne Bindung ca. 0,35–0,47 USD je Stunde: rund um die Uhr ca. 225–305 €, nur zu Bürozeiten (10 Stunden an ca. 22 Arbeitstagen) ca. 70–90 € zuzüglich ca. 10–15 € für Plattenspeicher und feste IPv4-Adresse, die durchgehend berechnet werden <a href="#q13">[Q13]</a>. Eine Laufzeitbindung wird auch berechnet, wenn die Instanz abgeschaltet ist; beides lässt sich nicht kombinieren. Betrieb nur zu Bürozeiten setzt voraus, dass Mailversand und Hintergrundjobs außerhalb dieser Zeit ruhen dürfen. Ohne Zusatzdienste</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + Storage-Services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 40–90 € Server + 8–18 € automatische Sicherung/Snapshots + 2–5 € Objektspeicher = 50–113 €/Monat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung nach öffentlichen Preisübersichten von Cloud-Anbietern; automatische Sicherung üblicherweise ca. 20 % des Serverpreises, Datenabfluss im Inklusivvolumen. Bietet Medien-Ausfallsicherheit und automatisierte Disk-Snapshots</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete + gemanagte DB &amp; Storage-Services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 50–113 € Server/Storage + 12–25 € gemanagte DB = 62–138 €/Monat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung, empfohlene Praxis-Kombination: Entlastung bei DB-Wartung, automatisierte Point-in-Time-Snapshots und hohe Medien-Ausfallsicherheit</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Managed Cloud</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 125–267 €/Monat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung, Summe getrennt abgerechneter Dienste (Rechenleistung, Datenbank, Speicher, Snapshots, Datenabfluss): bisherige 100–200 € zuzüglich 25–67 € für vergleichbare Rechenleistung. Mit Hyperscaler-Preisen für die Rechenleistung entsprechend höher</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Speicherpreis Cloud (Objektspeicher inkl. Snapshots)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete ca. 0,01–0,025 €/GB je Monat, Managed Cloud ca. 0,03–0,08 €/GB je Monat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung nach öffentlichen Preisübersichten; bei Managed Cloud inkl. Replikation und verwalteter Sicherung</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Größere Festplatten (eigener Server, nur ohne Reduktion)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 50–150 € Aufpreis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung: beim ohnehin fälligen Plattentausch höhere Kapazität für ca. 1,2–1,7 TB zusätzlichen Bestand inkl. Sicherung, falls Worst-Case-Belege unreduziert gespeichert würden. Mit Reduktion reichen die üblichen Platten</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Volumenabhängiger Anteil der Cloud-Kosten</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Servermiete 10–23 €/Monat (Sicherung, Snapshots, Objektspeicher), Managed Cloud ca. 20–40 €/Monat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung für Belege mit der reduzierten Durchschnittsgröße von 2,5 MB je Rechnung (Bestand ca. 30 GB, ca. 60–90 GB inkl. Sicherung). Bei dieser Menge bestimmen Grundgebühren, Snapshots und Datenabfluss den Betrag, nicht die Belegmenge. Grundlage für die Volumenszenarien. Server, gemanagte DB und Plattformgebühren gelten als fest</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kaltarchiv</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca. 18–35 € im Jahr 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Schätzung, vereinfachter konstanter Ansatz</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datensicherung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4–6 Fassungen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Annahme (Generationenprinzip, Spiegelung). Räumlich getrennte Aufbewahrung fordert <a href="#q4">[Q4]</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Betrachtungszeitraum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10 Jahre</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Annahme der Modellrechnung; die gesetzliche Aufbewahrung beträgt 8 Jahre ab Ende des Ausstellungsjahres</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Belegvolumen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.500 Rechnungen pro Jahr</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Festlegung des Szenarios</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_speicher_je_rechnung"><a class="anchor" href="#_speicher_je_rechnung"></a><a class="link" href="#_speicher_je_rechnung">9.4. Speicher je Rechnung</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Typischer Alltag (Handwerk &amp; Dienstleistung, 2–4 Belege):</strong> Unreduziert ca. 8 MB (1x Stundennachweis, 1–2 Materialquittungen), nach automatischer Reduktion (0,8 MB Belegbudget) im System ca. 2,5 MB (Einsparung ca. 5,5 MB je Rechnung). Bei 1.500 Rechnungen/Jahr: vermiedenes Datenvolumen ca. 8,25 GB/Jahr (mit 4–6 Sicherungsfassungen ca. 33–50 GB vermiedener Speicher je Jahrgang). Im rollierenden 8-Jahres-Bestand (12.000 Rechnungen) belegen Rechnungs- und Belegdateien im System lediglich ca. 30 GB Primärspeicher (ca. 120–180 GB inkl. Sicherungen).</p>
+</li>
+<li>
+<p><strong>Worst-Case-Stresstest (bis zu 19 Belege):</strong> Unreduziert ca. 49 MB, reduziert ca. 6 MB, Einsparung ca. 43 MB (Schätzung aus internen Testbelegen mit Maximalbelegung und hochauflösenden Farbscans). Dient als Obergrenze zur Dimensionierung von Backup-Systemen und IT-Notfallkonzepten. Bei 1.500 Rechnungen/Jahr: Jahrgang = 1.500 × 43 MB = ca. 64,5 GB Einsparung (mit 4–6 Fassungen ca. 260–390 GB). Die 6 MB setzen eine starke Reduktion voraus; schöpft eine Rechnung das Belegbudget voll aus (bis 15,5 MB), sinkt die Einsparung auf ca. 33,5 MB je Rechnung (ca. −22 %).</p>
+</li>
+<li>
+<p><strong>Datenbank ca. 15–20 KB je Rechnung:</strong> Schätzung für PostgreSQL-Transaktionsdaten.</p>
+</li>
+<li>
+<p><strong>Speicher-Jahre der Belege im System (versendender Betrieb):</strong> Jahrgang reduziert typisch 1.500 × 2,5 MB = 3,75 GB, Worst Case 1.500 × 6 MB = 9 GB, × 2–3 Fassungen im versendenden Betrieb. Bestand im Mittel: Jahr <em>n</em> = 1–9 ca. (<em>n</em> − 0,5) Jahrgänge, Jahr 10 ca. 8,5 Jahrgänge (der erste Jahrgang wird zu Beginn von Jahr 10 gelöscht), zusammen ca. 49 Jahrgangs-Jahre. Ergibt typisch ca. 0,37–0,55 TB-Jahre, Worst Case ca. 0,9–1,3 TB-Jahre. Im empfangenden Betrieb entsteht etwa dieselbe Menge. Unreduziert (typisch 8 MB, Worst Case 49 MB) wären es ca. 3- bzw. 8-mal so viele.</p>
+</li>
+<li>
+<p><strong>Speicherkosten Cloud:</strong> TB-Jahre × 12 Monate × Speicherpreis (siehe Eingangswerte), ohne Preissteigerung. Durchschnitt (Ø) = Mitte der Spanne; Anteil = Ø-Speicherkosten ÷ Ø-Gesamtkosten 10 Jahre (Servermiete mit Storage-Services und mit gemanagter DB zusammen 6.720–18.550 €, Ø ca. 12.600 €; Managed Cloud 16.810–35.900 €, Ø ca. 26.400 €; Mini-PC + NAS + Kaltarchiv 2.530–3.540 €, Ø ca. 3.000 €).</p>
+</li>
+<li>
+<p><strong>CO₂e Speicher Cloud:</strong> TB-Jahre × 166–280 kg CO₂e je TB und Jahr <a href="#q2">[Q2]</a>: typisch ca. 0,06–0,15 t, Worst Case ca. 0,15–0,37 t (versendender Betrieb); mit Empfangsseite etwa doppelt so viel. Buchenwald-Vergleich für den Worst Case im versendenden Betrieb: 11 t je Hektar und Jahr = 1,1 kg je m² und Jahr; 0,15–0,37 t ÷ (1,1 kg × 10 Jahre) = ca. 13–34 m² <a href="#q11">[Q11]</a>. Der Wert ist Bruttozuwachs vor Holzernte; seit 2017 ist der deutsche Wald insgesamt keine Kohlenstoffsenke mehr, vor allem wegen Dürreschäden <a href="#q12">[Q12]</a>. Der Vergleich veranschaulicht die Größenordnung, er ist keine Kompensationsrechnung.</p>
+</li>
+<li>
+<p><strong>CO₂e Betrieb eigener Server:</strong> 18–20 W × 8.760 h × 10 Jahre = ca. 1.580–1.750 kWh. Ökostrom und eigene Photovoltaik: × 43–63 g CO₂e/kWh (Lebenszyklus Photovoltaik als Obergrenze) <a href="#q17">[Q17]</a> = höchstens ca. 0,07–0,11 t. Zum Vergleich Strommix: × 344–353 g CO₂/kWh <a href="#q14">[Q14]</a> = ca. 0,54–0,62 t (nur Mini-PC, 10–13 W: ca. 0,30–0,40 t).</p>
+</li>
+<li>
+<p><strong>CO₂e Betrieb Cloud-Rechenleistung:</strong> 62 Server × 310 W ÷ 2.044 Kerne = ca. 9,4 W je physischem Kern (Behörden-Rechenzentren 2019/2020, Tabelle 48 in <a href="#q2">[Q2]</a>). 8 vCPU = 4–8 physische Kerne (mit bzw. ohne Hyperthreading) × 9,4 W × PUE 1,2 = ca. 45–90 W. × 8.760 h × 10 Jahre = ca. 3.950–7.900 kWh. Strom erneuerbar: × 43–63 g CO₂e/kWh = höchstens ca. 0,17–0,50 t. Strommix: × 344–353 g CO₂/kWh = ca. 1,4–2,8 t. Mit dem höheren PUE von 1,6 aus derselben Quelle ergeben sich ca. 60–120 W.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_volumenszenarien"><a class="anchor" href="#_volumenszenarien"></a><a class="link" href="#_volumenszenarien">9.5. Volumenszenarien</a></h3>
+<div class="formula">
+<div class="formula__row"><var>N</var><sub>wachsend</sub> = 1.500 · <span class="frac"><span>1,1<sup>10</sup> − 1</span><span>0,1</span></span> ≈ 23.900 Rechnungen</div>
+<div class="formula__row"><var>N</var><sub>rückläufig</sub> = 1.500 · <span class="frac"><span>1 − 0,9<sup>10</sup></span><span>0,1</span></span> ≈ 9.800 Rechnungen</div>
+</div>
+<div class="paragraph">
+<p>Die Kosten wurden näherungsweise skaliert: Fixe Anteile (Server, Hardware, gemanagte DB, Plattformgebühren) bleiben, volumenabhängige Anteile (Speicher, Snapshots, Replikation; siehe Eingangswerte) folgen dem Verhältnis der Rechnungsmengen (×1,59 bzw. ×0,65). Im ersten Jahr bildet das Basisvolumen von 1.500 Rechnungen (bzw. ±10 %) den Ausgangspunkt; die volumenabhängigen Abweichungen machen im ersten Jahr nur wenige Euro aus. Die Werte sind deshalb grobe Näherungen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_break_even"><a class="anchor" href="#_break_even"></a><a class="link" href="#_break_even">9.6. Break-even</a></h3>
+<div class="formula">
+<div class="formula__row"><var>t</var><sub>BE</sub> = <span class="frac"><span><var>A</var></span><span><var>m</var><sub>Miete</sub> − <var>m</var><sub>Strom</sub></span></span></div>
+</div>
+<div class="ulist formula-legend">
+<ul>
+<li>
+<p><em>t</em><sub>BE</sub> = Monate bis zum Break-even</p>
+</li>
+<li>
+<p><em>A</em> = Anschaffung</p>
+</li>
+<li>
+<p><em>m</em><sub>Miete</sub>, <em>m</em><sub>Strom</sub> = monatliche Miete bzw. Stromkosten</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Beispiel Mini-PC + NAS + Kaltarchiv: Anschaffung 900–1.190 €, Strom und Archiv ca. 5,5–8 €/Monat. Break-even = Anschaffung ÷ (Miete − eigene Monatskosten). Gegenüber Managed Cloud (125–267 €/Monat): ca. 3–10 Monate. Gegenüber Hyperscaler-Instanz mit Laufzeitbindung (100–130 €/Monat): ca. 7–13 Monate. Gegenüber Servermiete + gemanagter DB &amp; Storage-Services (62–138 €/Monat): ca. 7–22 Monate. Gegenüber Servermiete + Storage (50–113 €/Monat): ca. 8–28 Monate. Gegenüber reiner Servermiete (40–90 €/Monat): ca. 11–37 Monate (fachlich unvollständig, da ohne Datenbankservices und Snapshots). Ohne Inflation, ohne Ersatz, ohne Personal.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_personentage"><a class="anchor" href="#_personentage"></a><a class="link" href="#_personentage">9.7. Personentage</a></h3>
+<div class="paragraph">
+<p>Die Personentage in <a href="#betrieb">Kapitel 5, <em>Betrieb und Wartung</em></a> basieren auf den praktischen Erfahrungswerten der Projektleitung aus dem Realbetrieb (Einlaufphase ca. 6 Monate: eigener Server 0,75–1,5 PT mit Referenzhardware und Betriebsskripten, Cloud-Modelle ab 2,5–3 PT, zwei geplante Wartungsfenster pro Jahr bei eigenem Server, wöchentliche Kontrollen in der Cloud).</p>
+</div>
+<div class="paragraph">
+<p>Die Verwaltungswerkzeuge <code>lt</code> und <code>lhorse</code> werden erst nach einer Reife- und Härtungsphase unter Realbedingungen allgemein veröffentlicht, voraussichtlich Q4/2027 bis Q1/2028. Andere Betriebe können die ausgewiesenen geringen Aufwände vorab realisieren, indem sie die evaluierte Referenzhardware oder die standardisierten Betriebsskripte des Projekts einsetzen. Das Betriebskonzept und die Erstinstallation in der Cloud (ca. 14 Personentage) ist eine erste Schätzung des Projekts für die erstmalige Bereitstellung (Greenfield oder Provider-Setup). Es gilt für Servermiete und Managed Cloud gleichermaßen und hängt vom Cloud-Anbieter ab, etwa von Dienstumfang, Rechtemodell und Sicherungsangebot. Wer dieses Konzept extern vergibt, rechnet: Personentage × Tagessatz.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nicht_enthalten"><a class="anchor" href="#_nicht_enthalten"></a><a class="link" href="#_nicht_enthalten">9.8. Nicht enthalten</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Personalkosten:</strong> Tagessätze unterscheiden sich je Betrieb stark. Berechnung: Personentage pro Jahr × eigener Tagessatz.</p>
+</li>
+<li>
+<p>Steuern und Umsatzsteuer-Behandlung (alle Beträge als Näherungswerte ohne Steuerbetrachtung)</p>
+</li>
+<li>
+<p>Abschreibung und Finanzierung</p>
+</li>
+<li>
+<p>Migration und Umzug, auch erzwungene Migrationen bei Versionsende von Cloud-Diensten (Aufwand: <a href="#betrieb">Kapitel 5, <em>Betrieb und Wartung</em></a>)</p>
+</li>
+<li>
+<p>Kosten durch Ausfälle oder Datenverlust</p>
+</li>
+<li>
+<p>Zusatzdienste wie Monitoring oder Support-Verträge</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Software-Lizenzen fallen nicht an: Alle Komponenten sind Open Source.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_grenzen"><a class="anchor" href="#_grenzen"></a><a class="link" href="#_grenzen">9.9. Grenzen</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Zweck und Geltung:</strong> Diese Modellrechnung dient zur Verdeutlichung der Vor- und Nachteile der verschiedenen Betriebsverfahren. Sie ersetzt keine exakte Planung und Auswahl anhand der jeweils gültigen Konditionen der entsprechenden Cloud-Provider und IT-Systemhäuser.</p>
+</li>
+<li>
+<p>Alle Preise sind Näherungen Stand Oktober 2026. Preise der Cloud-Anbieter ändern sich (siehe <a href="#realitaetscheck">Preisentwicklung</a>).</p>
+</li>
+<li>
+<p>Die Modelle sind vereinfacht. Reale Angebote unterscheiden sich in Leistung, SLA und Standort.</p>
+</li>
+<li>
+<p>Personalaufwand fehlt in den Summen. In der Modellbetrachtung wiegt er bei Cloud-Betrieb tendenziell schwerer (5–10 gegenüber 2–3 PT pro Jahr), weil Internet-Absicherung, Rechteverwaltung und Kostenkontrolle hinzukommen. Die Werte für den eigenen Server beruhen auf den Erfahrungen der Projektleitung und sind nicht unabhängig geprüft. Managed Services entlasten bei Plattform- und Patch-Arbeit. Der eigene Server trägt Hardwareausfall und Sicherung selbst. Das ist eine Tendenz, keine Messung.</p>
+</li>
+<li>
+<p>Volumenszenarien (±10 % pro Jahr) sind Näherungen.</p>
+</li>
+<li>
+<p>Das Dokument ersetzt keine Steuer-, Rechts- oder Fachberatung.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="quellen"><a class="anchor" href="#quellen"></a><a class="link" href="#quellen">10. Quellen</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Alle Quellen sind frei zugänglich (ohne Bezahlung oder Login); verlinkt werden nur Behörden, Hochschulen, Forschungseinrichtungen und renommierte Fachmedien. Abrufdatum: 02.10.2026. Verweise im Text als [Q1] usw.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="q1"></a><strong>Q1</strong> Statistisches Bundesamt (Destatis): <em>Jedes zweite Unternehmen nutzt kostenpflichtige Cloud-Services</em> (Pressemitteilung Nr. 416, 24.11.2025). <a href="https://www.destatis.de/DE/Presse/Pressemitteilungen/2025/11/PD25_416_52911.html" target="_blank" rel="noopener">destatis.de</a></p>
+</li>
+<li>
+<p><a id="q2"></a><strong>Q2</strong> Umweltbundesamt: <em>Green Cloud Computing: Lebenszyklusbasierte Datenerhebung zu Umweltwirkungen des Cloud Computing.</em> TEXTE 94/2021. <a href="https://www.umweltbundesamt.de/publikationen/green-cloud-computing" target="_blank" rel="noopener">umweltbundesamt.de</a></p>
+</li>
+<li>
+<p><a id="q3"></a><strong>Q3</strong> Umweltbundesamt: <em>Vergleich der durchschnittlichen Emissionen einzelner Verkehrsmittel im Personenverkehr</em> (2024). <a href="https://www.umweltbundesamt.de/themen/verkehr/emissionsdaten" target="_blank" rel="noopener">umweltbundesamt.de</a></p>
+</li>
+<li>
+<p><a id="q4"></a><strong>Q4</strong> Bundesamt für Sicherheit in der Informationstechnik (BSI): <em>IT-Grundschutz-Kompendium, Baustein CON.3 Datensicherungskonzept,</em> Edition 2023. <a href="https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium_Einzel_PDFs_2023/03_CON_Konzepte_und_Vorgehensweisen/CON_3_Datensicherungskonzept_Edition_2023.pdf" target="_blank" rel="noopener">bsi.bund.de (PDF)</a></p>
+</li>
+<li>
+<p><a id="q5"></a><strong>Q5</strong> IETF (D. Crocker): <em>Internet Mail Architecture.</em> RFC 5598. <a href="https://www.rfc-editor.org/rfc/rfc5598" target="_blank" rel="noopener">rfc-editor.org</a></p>
+</li>
+<li>
+<p><a id="q6"></a><strong>Q6</strong> heise online: <em>Hetzner increases prices from April 1</em> (23.02.2026). <a href="https://www.heise.de/en/news/Hetzner-increases-prices-from-April-1-11185981.html" target="_blank" rel="noopener">heise.de</a></p>
+</li>
+<li>
+<p><a id="q7"></a><strong>Q7</strong> heise online: <em>Für manche günstiger, für manche teurer: Neue Preise für die Google Cloud</em> (15.03.2022). <a href="https://www.heise.de/news/Fuer-manche-guenstiger-fuer-manche-teurer-Neue-Preise-fuer-die-Google-Cloud-6550031.html" target="_blank" rel="noopener">heise.de</a></p>
+</li>
+<li>
+<p><a id="q8"></a><strong>Q8</strong> heise online: <em>EU-Cloud-Wettbewerber: Microsofts Preissteigerungen reichen an Erpressung.</em> <a href="https://www.heise.de/news/EU-Cloud-Wettbewerber-Microsofts-Preissteigerungen-reichen-an-Erpressung-8848157.html" target="_blank" rel="noopener">heise.de</a></p>
+</li>
+<li>
+<p><a id="q9"></a><strong>Q9</strong> The Register: <em>Google introduces new Cloud infrastructure pricing</em> (14.03.2022). <a href="https://www.theregister.com/2022/03/14/google_introduces_new_cloud_infrastructure/" target="_blank" rel="noopener">theregister.com</a></p>
+</li>
+<li>
+<p><a id="q10"></a><strong>Q10</strong> heise online: <em>Up to 200 percent: Cloud hoster Hetzner adjusts prices again.</em> <a href="https://www.heise.de/en/news/Up-to-200-percent-Cloud-hoster-Hetzner-adjusts-prices-again-11333037.html" target="_blank" rel="noopener">heise.de</a></p>
+</li>
+<li>
+<p><a id="q11"></a><strong>Q11</strong> Bundesinformationszentrum Landwirtschaft (BZL, Bundesanstalt für Landwirtschaft und Ernährung): <em>Wie viel CO₂ binden Wälder?</em> Datenbasis: Kohlenstoffinventur 2017 des Thünen-Instituts. <a href="https://www.landwirtschaft.de/umwelt/klimawandel/rolle-der-landwirtschaft/wie-viel-co2-binden-waelder" target="_blank" rel="noopener">landwirtschaft.de</a></p>
+</li>
+<li>
+<p><a id="q12"></a><strong>Q12</strong> Bundesministerium für Landwirtschaft, Ernährung und Heimat / Thünen-Institut: <em>Vierte Bundeswaldinventur 2022 — Klimaschützer Wald.</em> <a href="https://www.bundeswaldinventur.de/vierte-bundeswaldinventur-2022/klimaschuetzer-wald" target="_blank" rel="noopener">bundeswaldinventur.de</a></p>
+</li>
+<li>
+<p><a id="q13"></a><strong>Q13</strong> Amazon Web Services: <em>New – AWS Public IPv4 Address Charge + Public IP Insights</em> (Jeff Barr, 28.07.2023, wirksam 01.02.2024). <a href="https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/" target="_blank" rel="noopener">aws.amazon.com</a></p>
+</li>
+<li>
+<p><a id="q14"></a><strong>Q14</strong> Umweltbundesamt: <em>CO₂-Emissionen pro Kilowattstunde Strom 2025 nur leicht gesunken.</em> Abruf 11.10.2026. <a href="https://www.umweltbundesamt.de/themen/co2-emissionen-pro-kilowattstunde-strom-2025-nur" target="_blank" rel="noopener">umweltbundesamt.de</a></p>
+</li>
+<li>
+<p><a id="q15"></a><strong>Q15</strong> Umweltbundesamt: <em>Digitale Dienste / Cloud Computing.</em> Abruf 11.10.2026. <a href="https://www.umweltbundesamt.de/themen/digitalisierung/gruene-informationstechnik-green-it/digitale-dienste-cloud-computing" target="_blank" rel="noopener">umweltbundesamt.de</a></p>
+</li>
+<li>
+<p><a id="q16"></a><strong>Q16</strong> Bundesamt für Justiz: <em>Energieeffizienzgesetz (EnEfG), Anforderungen an Rechenzentren.</em> Abruf 11.10.2026. <a href="https://www.gesetze-im-internet.de/enefg/__11.html" target="_blank" rel="noopener">gesetze-im-internet.de</a></p>
+</li>
+<li>
+<p><a id="q17"></a><strong>Q17</strong> Umweltbundesamt: <em>Photovoltaik.</em> Abruf 11.10.2026. <a href="https://www.umweltbundesamt.de/themen/klima-energie/erneuerbare-energien/photovoltaik" target="_blank" rel="noopener">umweltbundesamt.de</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 0.9.35-SNAPSHOT<br>
+Last updated 2026-10-11 20:36:34 UTC
+</div>
+</div>
+</body>
+</html>
