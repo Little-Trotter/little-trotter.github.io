@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="description" content="Leitfaden in einfacher Sprache: Wie jede per E-Mail versendete Rechnung als Kopie in das E-Mail-Archiv Ihres Betriebs gelangt und was Little Trotter dafür nachweist">
+<meta name="author" content="Projektleitung (https://github.com/eifel42[eifel42])">
+<meta name="copyright" content="Copyright (C) 2026 https://github.com/little-trotter/invoice">
+<title>Rechnungsversand und Übergabe an das E-Mail-Archiv</title>
+<link rel="stylesheet" href="css/arc42-docs.css">
+<!-- arc42 documentation — docinfo header -->
+<!-- No external runtime resources: generated output must not depend on CDNs. -->
+
+<!-- Meta tags for better mobile experience -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- App accent color (--lt-accent in styles.css); browsers auto-pick a
+     prefers-color-scheme variant of the same file, but there is no
+     dedicated dark theme-color here since the docs page itself always
+     paints its own dark background via CSS regardless. -->
+<meta name="theme-color" content="#1A73E8">
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const path = window.location.pathname;
+    const isIndex = path.endsWith('/index.html') || path === '/' || path === '';
+
+    if (isIndex || document.querySelector('.back-to-index')) {
+      return;
+    }
+
+    const pageTitle =
+      document.querySelector('#content h1, #header h1')?.textContent?.trim() ||
+      document.title.replace(/\s+-\s+.*$/, '').trim() ||
+      'Current page';
+
+    const link = document.createElement('a');
+    link.href = 'index.html';
+    link.className = 'back-to-index';
+    link.setAttribute('rel', 'home');
+    link.setAttribute('aria-label', `Back from ${pageTitle} to the documentation index`);
+    link.setAttribute('title', 'Back to documentation index');
+    link.innerHTML = `
+      <span class="back-to-index__icon" aria-hidden="true">
+        <span class="back-to-index__arrow">&larr;</span>
+      </span>
+      <span class="back-to-index__copy">
+        <span class="back-to-index__eyebrow">Documentation Hub</span>
+        <span class="back-to-index__title">Return to index</span>
+      </span>
+    `;
+    document.body.appendChild(link);
+
+    // Executive Brand Header Banner (A-Concept)
+    if (!document.querySelector('.lt-brand-bar')) {
+      const brandBar = document.createElement('div');
+      brandBar.className = 'lt-brand-bar';
+      brandBar.innerHTML = `
+        <div class="lt-brand-bar__inner">
+          <a href="index.html" class="lt-brand-bar__logo-link" title="Little Trotter Homepage">
+            <img src="images/little-trotter-head-icon.svg" alt="Little Trotter Horse Head Icon" class="lt-brand-bar__icon" />
+          </a>
+          <div class="lt-brand-bar__text">
+            <div class="lt-brand-bar__title">LITTLE TROTTER</div>
+            <div class="lt-brand-bar__subtitle">X-Invoice</div>
+          </div>
+          <div class="lt-brand-bar__badges">
+            <span class="lt-brand-badge">v0.9.59-SNAPSHOT</span>
+            <span class="lt-brand-badge lt-brand-badge--preview">Developer Preview</span>
+          </div>
+        </div>
+      `;
+      const headerEl = document.getElementById('header') || document.body.firstChild;
+      if (headerEl && headerEl.parentNode) {
+        headerEl.parentNode.insertBefore(brandBar, headerEl);
+      } else {
+        document.body.insertBefore(brandBar, document.body.firstChild);
+      }
+    }
+  });
+</script>
+
+<!-- Focus styles -->
+<style>
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Improved focus styles for accessibility */
+  a:focus, button:focus, input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--lt-accent, #1A73E8);
+    outline-offset: 2px;
+  }
+
+  /* Dark mode: all variables are defined in arc42-docs.css / arc42-canvas.css
+     (loaded via :stylesheet:, always present on every page this file is
+     injected into) — this block just reads --lt-* custom properties, it
+     does not redefine them. */
+</style>
+
+<!-- Disclaimer footer injected on all arc42 pages -->
+<style>
+  #ltx-disclaimer {
+    margin-top: 3rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--lt-rule, #DADCE0);
+    font-size: 0.8rem;
+    color: var(--lt-text-secondary, #5F6368);
+    line-height: 1.6;
+  }
+  #ltx-disclaimer .disclaimer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-bottom: 6px;
+  }
+  #ltx-disclaimer .disclaimer-links a {
+    color: var(--lt-accent, #1A73E8);
+  }
+  #ltx-disclaimer .disclaimer-note {
+    color: var(--lt-text-disabled, #9AA0A6);
+    font-size: 0.75rem;
+  }
+  @media print {
+    #ltx-disclaimer { display: none; }
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footer = document.createElement('div');
+    footer.id = 'ltx-disclaimer';
+    footer.innerHTML = `
+      <div class="disclaimer-links">
+        <a href="https://github.com/little-trotter" target="_blank" rel="noopener">&#169; 2026 little-trotter</a>
+        <a href="index.html">Documentation Index</a>
+      </div>
+      <p class="disclaimer-note">
+        Internal architecture documentation for Little Trotter X-Invoice.
+        AI-assisted documentation &middot; Synthetic test data (datagen) &middot; Not published outside the development team.
+      </p>
+    `;
+    document.body.appendChild(footer);
+  });
+</script>
+
+<!-- Click-to-zoom lightbox for arc42 diagrams (dependency-free) -->
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  #content .imageblock img {
+    cursor: zoom-in;
+  }
+
+  .lt-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .88);
+    cursor: zoom-out;
+    touch-action: none;
+  }
+
+  /* Sized by script to fit 95vw x 95vh while keeping the aspect ratio: vector diagrams are
+     scaled up, raster images never beyond their natural size. No letterboxing, so the
+     white diagram background ends exactly where the image ends.
+     Zoom/pan is layered on top via a CSS transform (translate + scale) with
+     transform-origin at the top-left corner, so the script's math stays in one
+     coordinate space (see setZoom/clampPan below). */
+  .lt-lightbox__img {
+    display: block;
+    cursor: zoom-out;
+    background: #ffffff;
+    transform-origin: 0 0;
+    will-change: transform;
+    touch-action: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  .lt-lightbox__hint {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: .75rem;
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .75);
+    pointer-events: none;
+  }
+
+  .lt-lightbox__close {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .4);
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .lt-lightbox__close:hover {
+    background: rgba(255, 255, 255, .24);
+  }
+  .lt-lightbox__close:focus {
+    outline: 3px solid var(--lt-accent, #1A73E8);
+    outline-offset: 2px;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = document.querySelectorAll('#content .imageblock img');
+    if (!images.length) {
+      return;
+    }
+
+    let overlay = null;
+    let overlayImg = null;
+    let closeBtn = null;
+    let lastFocused = null;
+
+    // Zoom/pan state, shared by the single overlay instance. `scale` is relative
+    // to the fitted size from fitOverlayImage(); translate is in screen pixels
+    // and applies via `transform: translate(tx,ty) scale(scale)` with
+    // transform-origin 0 0 (see CSS), so the maths below stays in one space.
+    const MIN_SCALE = 1;
+    const MAX_SCALE = 8;
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+    let baseRect = null; // overlayImg's layout rect while scale=1/tx=0/ty=0
+    const activePointers = new Map(); // pointerId -> {x, y}, for pan + pinch
+    let dragState = null; // single-pointer drag/click tracking
+    let pinchState = null; // two-pointer pinch-zoom tracking
+    let pendingClickTimer = null; // double-click disambiguation on the image
+
+    function isSvgSrc(src) {
+      return /\.svg(\?.*)?$/i.test(src || '');
+    }
+
+    function labelFor(img) {
+      const figureTitle = img.closest('.imageblock')?.querySelector('.title')?.textContent?.trim();
+      return figureTitle || img.getAttribute('alt') || 'Diagram';
+    }
+
+    function fitOverlayImage(allowUpscale) {
+      const naturalWidth = overlayImg.naturalWidth;
+      const naturalHeight = overlayImg.naturalHeight;
+      if (!naturalWidth || !naturalHeight) {
+        return;
+      }
+      let fitted = Math.min(
+        (window.innerWidth * 0.95) / naturalWidth,
+        (window.innerHeight * 0.95) / naturalHeight
+      );
+      if (!allowUpscale) {
+        fitted = Math.min(fitted, 1);
+      }
+      overlayImg.style.width = Math.round(naturalWidth * fitted) + 'px';
+      overlayImg.style.height = Math.round(naturalHeight * fitted) + 'px';
+    }
+
+    function applyTransform() {
+      overlayImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    }
+
+    function resetTransform() {
+      scale = 1;
+      tx = 0;
+      ty = 0;
+      applyTransform();
+      overlayImg.style.cursor = '';
+    }
+
+    // Fit the image to the viewport and drop any zoom/pan, then remember its
+    // untransformed layout rect -- the fixed reference point for all zoom/pan math.
+    function refit(allowUpscale) {
+      fitOverlayImage(allowUpscale);
+      resetTransform();
+      baseRect = overlayImg.getBoundingClientRect();
+    }
+
+    // Keep at least 20% of the (scaled) image inside the viewport on each axis.
+    function clampPan() {
+      if (!baseRect) {
+        return;
+      }
+      const displayedWidth = baseRect.width * scale;
+      const displayedHeight = baseRect.height * scale;
+      const minVisibleX = displayedWidth * 0.2;
+      const minVisibleY = displayedHeight * 0.2;
+      const txMax = window.innerWidth - minVisibleX - baseRect.left;
+      const txMin = minVisibleX - displayedWidth - baseRect.left;
+      const tyMax = window.innerHeight - minVisibleY - baseRect.top;
+      const tyMin = minVisibleY - displayedHeight - baseRect.top;
+      tx = Math.min(txMax, Math.max(txMin, tx));
+      ty = Math.min(tyMax, Math.max(tyMin, ty));
+    }
+
+    // Zoom to `newScale`, keeping the content point under (clientX, clientY) fixed on screen.
+    function setZoom(newScale, clientX, clientY) {
+      if (!baseRect) {
+        return;
+      }
+      newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+      if (newScale === scale) {
+        return;
+      }
+      const localX = (clientX - baseRect.left - tx) / scale;
+      const localY = (clientY - baseRect.top - ty) / scale;
+      tx += localX * (scale - newScale);
+      ty += localY * (scale - newScale);
+      scale = newScale;
+      clampPan();
+      applyTransform();
+      overlayImg.style.cursor = scale > 1 ? 'grab' : '';
+    }
+
+    function toggleZoom(clientX, clientY) {
+      if (scale > 1) {
+        resetTransform();
+      } else {
+        setZoom(2.5, clientX, clientY);
+      }
+    }
+
+    function distanceBetween(p1, p2) {
+      return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+    }
+
+    function midpointBetween(p1, p2) {
+      return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    }
+
+    // A pointerup that never moved 4px is a "click". On the backdrop that always
+    // closes; on the image it closes only when not zoomed, with a short delay so
+    // a second click arriving in time is treated as a double-click (zoom toggle)
+    // instead.
+    function handleClick(clientX, clientY, onImage) {
+      if (!onImage) {
+        closeLightbox();
+        return;
+      }
+      if (pendingClickTimer) {
+        clearTimeout(pendingClickTimer);
+        pendingClickTimer = null;
+        toggleZoom(clientX, clientY);
+        return;
+      }
+      pendingClickTimer = setTimeout(() => {
+        pendingClickTimer = null;
+        if (scale <= 1) {
+          closeLightbox();
+        }
+      }, 300);
+    }
+
+    function onPointerDown(event) {
+      if (event.target === closeBtn) {
+        return; // the button handles its own click
+      }
+      event.preventDefault(); // no native image drag / text selection while panning
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      const onImage = event.target === overlayImg;
+
+      if (activePointers.size === 2) {
+        // Second finger: switch to pinch-zoom, drop any single-pointer drag.
+        dragState = null;
+        const pts = [...activePointers.values()];
+        const mid = midpointBetween(pts[0], pts[1]);
+        pinchState = {
+          dist: distanceBetween(pts[0], pts[1]),
+          scale0: scale,
+          localX: (mid.x - baseRect.left - tx) / scale,
+          localY: (mid.y - baseRect.top - ty) / scale
+        };
+        return;
+      }
+
+      if (activePointers.size === 1) {
+        overlayImg.setPointerCapture?.(event.pointerId);
+        dragState = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          startTx: tx,
+          startTy: ty,
+          moved: false,
+          onImage
+        };
+        if (scale > 1 && onImage) {
+          overlayImg.style.cursor = 'grabbing';
+        }
+      }
+    }
+
+    function onPointerMove(event) {
+      if (!activePointers.has(event.pointerId)) {
+        return;
+      }
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pinchState && activePointers.size === 2) {
+        const pts = [...activePointers.values()];
+        const newDist = distanceBetween(pts[0], pts[1]);
+        const mid = midpointBetween(pts[0], pts[1]);
+        scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchState.scale0 * (newDist / pinchState.dist)));
+        tx = mid.x - baseRect.left - pinchState.localX * scale;
+        ty = mid.y - baseRect.top - pinchState.localY * scale;
+        clampPan();
+        applyTransform();
+        return;
+      }
+
+      if (dragState && event.pointerId === dragState.pointerId && activePointers.size === 1) {
+        const dx = event.clientX - dragState.startX;
+        const dy = event.clientY - dragState.startY;
+        if (Math.hypot(dx, dy) > 4) {
+          dragState.moved = true;
+        }
+        if (scale > 1 && dragState.onImage) {
+          tx = dragState.startTx + dx;
+          ty = dragState.startTy + dy;
+          clampPan();
+          applyTransform();
+        }
+      }
+    }
+
+    function onPointerUp(event) {
+      if (!activePointers.has(event.pointerId)) {
+        return;
+      }
+      activePointers.delete(event.pointerId);
+
+      if (pinchState) {
+        if (activePointers.size < 2) {
+          pinchState = null;
+        }
+        return;
+      }
+
+      if (dragState && event.pointerId === dragState.pointerId) {
+        overlayImg.style.cursor = scale > 1 ? 'grab' : '';
+        if (!dragState.moved) {
+          handleClick(event.clientX, event.clientY, dragState.onImage);
+        }
+        dragState = null;
+      }
+    }
+
+    function onPointerCancel(event) {
+      activePointers.delete(event.pointerId);
+      pinchState = null;
+      dragState = null;
+    }
+
+    function buildOverlay() {
+      overlay = document.createElement('div');
+      overlay.className = 'lt-lightbox';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.hidden = true;
+
+      overlayImg = document.createElement('img');
+      overlayImg.className = 'lt-lightbox__img';
+      overlayImg.draggable = false; // otherwise a mouse drag starts native image drag-and-drop
+      overlayImg.style.transform = 'translate(0px, 0px) scale(1)';
+
+      closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'lt-lightbox__close';
+      closeBtn.setAttribute('aria-label', 'Close enlarged image');
+      closeBtn.innerHTML = '&times;';
+
+      const hint = document.createElement('p');
+      hint.className = 'lt-lightbox__hint';
+      hint.setAttribute('aria-hidden', 'true');
+      hint.textContent = 'Scroll or pinch to zoom · drag to pan · 0 resets · Esc closes';
+
+      overlay.appendChild(overlayImg);
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(hint);
+      document.body.appendChild(overlay);
+
+      overlayImg.addEventListener('load', () => refit(isSvgSrc(overlayImg.src)));
+      window.addEventListener('resize', () => {
+        if (!overlay.hidden) {
+          refit(isSvgSrc(overlayImg.src));
+        }
+      });
+
+      overlay.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        const notches = -event.deltaY / 100;
+        setZoom(scale * Math.pow(1.1, notches), event.clientX, event.clientY);
+      }, { passive: false });
+
+      overlay.addEventListener('pointerdown', onPointerDown);
+      overlay.addEventListener('pointermove', onPointerMove);
+      overlay.addEventListener('pointerup', onPointerUp);
+      overlay.addEventListener('pointercancel', onPointerCancel);
+
+      closeBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeLightbox();
+      });
+      overlay.addEventListener('keydown', (event) => {
+        const panStep = 40;
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeLightbox();
+        } else if (event.key === 'Tab') {
+          // Only the close button is focusable inside the dialog: keep Tab there.
+          event.preventDefault();
+          closeBtn.focus();
+        } else if (event.key === '+' || event.key === '=') {
+          event.preventDefault();
+          setZoom(scale * 1.4, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (event.key === '-' || event.key === '_') {
+          event.preventDefault();
+          setZoom(scale / 1.4, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (event.key === '0') {
+          event.preventDefault();
+          resetTransform();
+        } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          if (event.key === 'ArrowUp') ty -= panStep;
+          else if (event.key === 'ArrowDown') ty += panStep;
+          else if (event.key === 'ArrowLeft') tx += panStep;
+          else tx -= panStep;
+          clampPan();
+          applyTransform();
+        }
+      });
+    }
+
+    function openLightbox(img) {
+      if (!overlay) {
+        buildOverlay();
+      }
+      lastFocused = document.activeElement;
+
+      const src = img.currentSrc || img.src;
+      overlay.setAttribute('aria-label', img.getAttribute('alt') || labelFor(img));
+      overlayImg.alt = img.getAttribute('alt') || '';
+      overlayImg.style.width = '';
+      overlayImg.style.height = '';
+      overlayImg.src = src;
+      refit(isSvgSrc(src));
+
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closeLightbox() {
+      if (!overlay || overlay.hidden) {
+        return;
+      }
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+
+      if (pendingClickTimer) {
+        clearTimeout(pendingClickTimer);
+        pendingClickTimer = null;
+      }
+      dragState = null;
+      pinchState = null;
+      activePointers.clear();
+
+      if (lastFocused && typeof lastFocused.focus === 'function') {
+        lastFocused.focus();
+      }
+      lastFocused = null;
+    }
+
+    images.forEach((img) => {
+      img.setAttribute('tabindex', '0');
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', 'Enlarge: ' + labelFor(img));
+
+      img.addEventListener('click', () => openLightbox(img));
+      img.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openLightbox(img);
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Collapsible Table of Contents (Accordion) -->
+<style>
+  .lt-toc-search {
+    margin: 0 0 0.75rem;
+    position: relative;
+  }
+  .lt-toc-search__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    border: 1px solid var(--sidebar-border, #dadce0);
+    border-radius: 4px;
+    background: var(--lt-surface, #ffffff);
+    color: var(--lt-text-primary, #202124);
+    outline: none;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .lt-toc-search__input:focus {
+    border-color: var(--lt-accent, #1a73e8);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+  }
+  .lt-toc-search__results {
+    display: none;
+    max-height: 280px;
+    overflow-y: auto;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    list-style: none;
+    background: var(--lt-surface, #ffffff);
+    border: 1px solid var(--sidebar-border, #dadce0);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+    font-size: 0.78rem;
+    z-index: 10;
+  }
+  .lt-toc-search__results li a {
+    display: block;
+    padding: 6px 10px;
+    color: var(--lt-text-primary, #202124);
+    text-decoration: none;
+    line-height: 1.3;
+  }
+  .lt-toc-search__results li a:hover,
+  .lt-toc-search__results li a:focus {
+    background: var(--lt-hover, #e8f0fe);
+    color: var(--lt-accent, #1a73e8);
+  }
+  .lt-search-match {
+    background: var(--lt-selection, #fff3b0);
+    color: var(--lt-text-primary, #202124);
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+
+  /* Dark mode: the sidebar itself is the surface colour, so the search field and
+     its result list sit one step above it (raised surface) to stay visible as
+     controls; hover and match use the selection tone with primary text, which
+     keeps every pairing above the WCAG AA 4.5:1 contrast bar. */
+  @media (prefers-color-scheme: dark) {
+    .lt-toc-search__input,
+    .lt-toc-search__results {
+      background: var(--lt-surface-raised, #35363A);
+      border-color: var(--lt-rule, #3C4043);
+    }
+    .lt-toc-search__input::placeholder {
+      color: var(--lt-text-secondary, #BDC1C6);
+    }
+    .lt-toc-search__results {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+    .lt-toc-search__results li a:hover,
+    .lt-toc-search__results li a:focus {
+      background: var(--lt-selection, #404B5E);
+      color: var(--lt-text-primary, #E8EAED);
+    }
+    .lt-search-match {
+      background: var(--lt-selection, #404B5E);
+      color: var(--lt-text-primary, #E8EAED);
+    }
+  }
+
+  .lt-toc-controls {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--sidebar-border, #dadce0);
+  }
+
+  .lt-toc-btn {
+    background: transparent;
+    border: 1px solid var(--sidebar-border, #dadce0);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--lt-text-secondary, #5f6368);
+    cursor: pointer;
+    line-height: 1.2;
+    transition: all 0.15s ease-in-out;
+  }
+
+  .lt-toc-btn:hover,
+  .lt-toc-btn:focus-visible {
+    border-color: var(--lt-accent, #1a73e8);
+    color: var(--lt-accent, #1a73e8);
+    background-color: var(--lt-hover, #e8f0fe);
+    outline: none;
+  }
+
+  #toc li.has-children {
+    position: relative;
+  }
+
+  #toc li.has-children > a {
+    padding-right: 2.25rem;
+  }
+
+  .lt-toc-toggle {
+    position: absolute;
+    right: 0.25rem;
+    top: 0.25rem;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--lt-text-secondary, #5f6368);
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  }
+
+  .lt-toc-toggle:hover,
+  .lt-toc-toggle:focus-visible {
+    background-color: var(--lt-hover, #e8f0fe);
+    color: var(--lt-accent, #1a73e8);
+    outline: none;
+  }
+
+  .lt-toc-toggle svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #toc li.has-children > ul {
+    display: none;
+  }
+
+  #toc li.has-children.is-expanded > ul {
+    display: block;
+  }
+
+  #toc li.has-children.is-expanded > .lt-toc-toggle svg {
+    transform: rotate(90deg);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toc = document.getElementById('toc');
+    if (!toc) return;
+
+    const toctitle = document.getElementById('toctitle');
+    const isDe = (document.documentElement.lang || 'en').startsWith('de');
+
+    if (toctitle) {
+      const searchBox = document.createElement('div');
+      searchBox.className = 'lt-toc-search';
+      searchBox.innerHTML = `
+        <input type="search" class="lt-toc-search__input" placeholder="${isDe ? 'In Dokumentation suchen…' : 'Search documentation…'}" aria-label="${isDe ? 'Dokumentation durchsuchen' : 'Search documentation'}">
+        <ul class="lt-toc-search__results" role="listbox"></ul>
+      `;
+      toctitle.after(searchBox);
+
+      const input = searchBox.querySelector('.lt-toc-search__input');
+      const resultsList = searchBox.querySelector('.lt-toc-search__results');
+
+      // Index section titles and paragraphs
+      let searchIndex = null;
+      function buildIndex() {
+        if (searchIndex) return searchIndex;
+        searchIndex = [];
+        const content = document.getElementById('content');
+        if (!content) return searchIndex;
+        const headings = content.querySelectorAll('h1, h2, h3, h4');
+        headings.forEach(h => {
+          const id = h.id || h.querySelector('a.link, a.anchor')?.getAttribute('href')?.replace('#', '');
+          if (id && h.textContent.trim()) {
+            searchIndex.push({
+              id: id,
+              title: h.textContent.replace(/^§*\s*[\d.]*\s*/, '').trim(),
+              tag: h.tagName.toLowerCase(),
+              text: (h.nextElementSibling?.textContent || '').substring(0, 160)
+            });
+          }
+        });
+        return searchIndex;
+      }
+
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        if (query.length < 2) {
+          resultsList.style.display = 'none';
+          resultsList.innerHTML = '';
+          return;
+        }
+        const index = buildIndex();
+        const matches = index.filter(item =>
+          item.title.toLowerCase().includes(query) || item.text.toLowerCase().includes(query)
+        ).slice(0, 8);
+
+        if (matches.length === 0) {
+          resultsList.innerHTML = `<li style="padding:6px 10px;color:var(--lt-text-secondary);">${isDe ? 'Keine Treffer' : 'No results found'}</li>`;
+          resultsList.style.display = 'block';
+          return;
+        }
+
+        resultsList.innerHTML = matches.map(m => `
+          <li>
+            <a href="#${m.id}">
+              <strong>${m.title}</strong>
+              <div style="font-size:0.7rem;color:var(--lt-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.text}</div>
+            </a>
+          </li>
+        `).join('');
+        resultsList.style.display = 'block';
+      });
+
+      resultsList.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link) {
+          resultsList.style.display = 'none';
+          input.value = '';
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!searchBox.contains(e.target)) {
+          resultsList.style.display = 'none';
+        }
+      });
+
+      // Quick shortcut '/' to focus search
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== input && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+          e.preventDefault();
+          input.focus();
+        }
+      });
+
+      const controls = document.createElement('div');
+      controls.className = 'lt-toc-controls';
+      controls.innerHTML = `
+        <button type="button" class="lt-toc-btn lt-toc-btn--expand" title="${isDe ? 'Alle Abschnitte aufklappen' : 'Expand all sections'}">${isDe ? 'Alle aufklappen' : 'Expand all'}</button>
+        <button type="button" class="lt-toc-btn lt-toc-btn--collapse" title="${isDe ? 'Alle Abschnitte einklappen' : 'Collapse all sections'}">${isDe ? 'Alle einklappen' : 'Collapse all'}</button>
+      `;
+      searchBox.after(controls);
+
+      controls.querySelector('.lt-toc-btn--expand').addEventListener('click', () => {
+        toc.querySelectorAll('li.has-children').forEach((li) => {
+          li.classList.add('is-expanded');
+          const btn = li.querySelector(':scope > .lt-toc-toggle');
+          if (btn) btn.setAttribute('aria-expanded', 'true');
+        });
+      });
+
+      controls.querySelector('.lt-toc-btn--collapse').addEventListener('click', () => {
+        toc.querySelectorAll('li.has-children').forEach((li) => {
+          li.classList.remove('is-expanded');
+          const btn = li.querySelector(':scope > .lt-toc-toggle');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    const allLis = toc.querySelectorAll('li');
+    allLis.forEach((li) => {
+      const childUl = li.querySelector(':scope > ul');
+      const link = li.querySelector(':scope > a');
+      if (!childUl || !link) return;
+
+      li.classList.add('has-children');
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'lt-toc-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', isDe ? 'Unterpunkte umschalten' : 'Toggle sub-sections');
+      toggle.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>`;
+
+      link.after(toggle);
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const expanded = li.classList.toggle('is-expanded');
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+
+      link.addEventListener('click', () => {
+        li.classList.add('is-expanded');
+        toggle.setAttribute('aria-expanded', 'true');
+      });
+    });
+
+    function expandCurrentAnchor() {
+      const hash = window.location.hash;
+      if (!hash) return;
+      try {
+        const activeLink = toc.querySelector(`a[href="${hash}"]`);
+        if (activeLink) {
+          let parent = activeLink.closest('li.has-children');
+          while (parent) {
+            parent.classList.add('is-expanded');
+            const btn = parent.querySelector(':scope > .lt-toc-toggle');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+            parent = parent.parentElement ? parent.parentElement.closest('li.has-children') : null;
+          }
+        }
+      } catch (err) {
+        // Ignore malformed selector
+      }
+    }
+
+    expandCurrentAnchor();
+    window.addEventListener('hashchange', expandCurrentAnchor);
+  });
+</script>
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Rechnungsversand und Übergabe an das E-Mail-Archiv</h1>
+<div class="details">
+<span id="author" class="author">Projektleitung (https://github.com/eifel42[eifel42])</span><br>
+<span id="revnumber">version 0.9.59-SNAPSHOT,</span>
+<span id="revdate">2026-10-20</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Inhaltsverzeichnis</div>
+<ul class="sectlevel1">
+<li><a href="#_auf_einen_blick">1. Auf einen Blick</a>
+<ul class="sectlevel2">
+<li><a href="#_geltungsbereich">1.1. Geltungsbereich</a></li>
+</ul>
+</li>
+<li><a href="#_ablauf_der_archivübergabe">2. Ablauf der Archivübergabe</a>
+<ul class="sectlevel2">
+<li><a href="#_stationen">2.1. Stationen</a></li>
+</ul>
+</li>
+<li><a href="#_archivierungsoptionen">3. Archivierungsoptionen</a></li>
+<li><a href="#_praxisbeispiel_rechnungsversand">4. Praxisbeispiel Rechnungsversand</a></li>
+<li><a href="#_beleg_und_nachweis">5. Beleg und Nachweis</a>
+<ul class="sectlevel2">
+<li><a href="#_was_als_beleg_gilt">5.1. Was als Beleg gilt</a></li>
+<li><a href="#_zwei_getrennte_quellen">5.2. Zwei getrennte Quellen</a></li>
+</ul>
+</li>
+<li><a href="#archivpakete">6. Archivpakete</a>
+<ul class="sectlevel2">
+<li><a href="#_archivpaket_der_rechnung">6.1. Archivpaket der Rechnung</a></li>
+<li><a href="#_archivpaket_der_e_mail">6.2. Archivpaket der E-Mail</a></li>
+<li><a href="#_prüfsumme_und_signatur">6.3. Prüfsumme und Signatur</a></li>
+</ul>
+</li>
+<li><a href="#_archivübergabe_im_versandverlauf">7. Archivübergabe im Versandverlauf</a>
+<ul class="sectlevel2">
+<li><a href="#_eigene_adresse_für_belege">7.1. Eigene Adresse für Belege</a></li>
+<li><a href="#_status_der_archivübergabe">7.2. Status der Archivübergabe</a></li>
+</ul>
+</li>
+<li><a href="#_einrichtung">8. Einrichtung</a></li>
+<li><a href="#_aufgabenteilung">9. Aufgabenteilung</a></li>
+<li><a href="#_kurzfassungen">10. Kurzfassungen</a></li>
+<li><a href="#_begriffe">11. Begriffe</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<div class="title">Zusammenfassung</div>
+<blockquote>
+Dieser Leitfaden erklärt, wie jede Rechnung, die Little Trotter X-Invoice per E-Mail versendet, als Kopie in das E-Mail-Archiv Ihres Betriebs gelangt und was Little Trotter dazu nachweist. Er zeigt den Weg Schritt für Schritt, beschreibt die Einrichtung und erklärt, woran Sie den Erfolg erkennen. Das Archiv selbst stellt Ihr E-Mail-Dienstleister; Little Trotter übergibt und protokolliert.
+</blockquote>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+<div class="dlist">
+<div class="title">Hinweise zu Transparenz, Einordnung und Verantwortung</div>
+<dl>
+<dt class="hdlist1">Transparenz und KI-Assistenz</dt>
+<dd>
+<p>Dieses Dokument wurde mit Unterstützung generativer KI-Systeme erstellt, strukturiert und redaktionell gepflegt und von der Projektleitung fachlich geprüft.</p>
+</dd>
+<dt class="hdlist1">Synthetische Beispiele</dt>
+<dd>
+<p>Alle Namen, Adressen und Nummern in den Beispielen sind fiktiv und stammen aus synthetischen Testdaten (datagen).</p>
+</dd>
+<dt class="hdlist1">Keine Verfahrensdokumentation, keine Steuerberatung</dt>
+<dd>
+<p>Dieser Leitfaden beschreibt ausschließlich den technischen Ablauf und ersetzt keine Verfahrensdokumentation; steuerliche Belange sind verbindlich mit Buchhaltung, Steuerberatung oder Wirtschaftsprüfung abzustimmen.</p>
+</dd>
+<dt class="hdlist1">Verantwortung der Betriebsführung</dt>
+<dd>
+<p>Archiv, Aufbewahrungsfristen und Datensicherung liegen beim Betrieb. Die Applikation übergibt und protokolliert.</p>
+</dd>
+</dl>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_auf_einen_blick"><a class="anchor" href="#_auf_einen_blick"></a><a class="link" href="#_auf_einen_blick">1. Auf einen Blick</a></h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>Little Trotter erstellt die E-Rechnung, versendet sie per E-Mail und protokolliert den Versand. Die unveränderbare Aufbewahrung über acht Jahre übernimmt das E-Mail-Archiv Ihres Betriebs. Den einmaligen Aufwand haben Sie dort: Das Archiv muss gebucht und eingeschaltet sein. In Little Trotter ist wenig oder nichts einzurichten.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ihr E-Mail-Dienstleister</strong> ist, wer Ihre E-Mail betreibt: Ihr Internetanbieter, Ihr IT-Fachbetrieb oder Ihre eigene IT-Abteilung. Dieser Leitfaden verwendet den Begriff für alle drei.</p>
+</div>
+<div class="ulist kpi-tiles">
+<ul>
+<li>
+<p><span class="kpi-value">0 Klicks</span> zusätzlich im Büro je Versand</p>
+</li>
+<li>
+<p><span class="kpi-value">1 Kopie</span> je E-Mail im Archiv, für die empfangende Stelle unsichtbar</p>
+</li>
+<li>
+<p><span class="kpi-value">8 Jahre</span> Aufbewahrung, eingestellt im Archiv</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Aufbewahrt wird die E-Rechnung selbst. Sie liegt als Anhang der E-Mail im Archiv: das PDF mit eingebetteter XML-Datei und dieselbe XML-Datei noch einmal einzeln. Zusätzlich erzeugt Little Trotter zwei signierte Archivpakete, eines für die Rechnung und eines für die E-Mail. Mit ihnen lässt sich später zeigen, dass Rechnung und E-Mail seit ihrer Entstehung nicht verändert wurden.</p>
+</div>
+<div class="paragraph">
+<p>Was das für das Büro bedeutet:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Keine Handarbeit:</strong> Niemand muss Rechnungen von Hand ablegen oder eine Adresse in Cc oder Bcc setzen. Die Kopie ins Archiv entsteht bei jedem Versand automatisch.</p>
+</li>
+<li>
+<p><strong>Gleicher Inhalt:</strong> Die Kopie im Archiv hat denselben Text und dieselben Anhänge wie die E-Mail an den Empfänger. Die Mailserver ergänzen unterwegs nur technische Kopfzeilen.</p>
+</li>
+<li>
+<p><strong>Sichtbarer Status:</strong> Im Versandverlauf steht zu jeder E-Mail, ob die Kopie im Archiv angekommen ist.</p>
+</li>
+<li>
+<p><strong>Kein gegenseitiges Blockieren:</strong> Ist das Archiv gerade nicht erreichbar, geht die Rechnung trotzdem an den Empfänger. Little Trotter versucht die Archivkopie später erneut und meldet einen endgültigen Fehlschlag im Nachrichtenzentrum.</p>
+</li>
+</ul>
+</div>
+<div id="drei-fragen" class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Wichtig</div>
+</td>
+<td class="content">
+<div class="title">Drei Fragen an Ihren E-Mail-Dienstleister</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Archivieren Sie ausgehende E-Mails automatisch und unveränderbar, auch solche, die eine Anwendung über den Postausgangsserver verschickt?</p>
+</li>
+<li>
+<p>Ist die Aufbewahrung auf mindestens acht Jahre eingestellt, und ist Löschen vor Ablauf ausgeschlossen?</p>
+</li>
+<li>
+<p>Wie lässt sich eine Nachricht im Archiv wiederfinden, und wie erhält eine Betriebsprüfung Zugriff?</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Lautet eine Antwort „nein“ oder „weiß nicht“, haben Sie vermutlich noch kein Archiv. Viele Standardtarife für E-Mail enthalten keines; es ist meist ein Zusatzprodukt. Prüfen Sie das Ergebnis mit einem Testversand: Schicken Sie eine Rechnung an eine eigene Adresse und lassen Sie die Nachricht im Archiv suchen.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_geltungsbereich"><a class="anchor" href="#_geltungsbereich"></a><a class="link" href="#_geltungsbereich">1.1. Geltungsbereich</a></h3>
+<div class="paragraph">
+<p>Der Leitfaden gilt für Rechnungen, die Little Trotter per E-Mail versendet.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Frist:</strong> Rechnungen sind acht Jahre aufzubewahren. Die Frist beginnt am Ende des Jahres, in dem die Rechnung ausgestellt wurde. Sie kann sich verlängern, solange das Finanzamt die Steuer für diesen Zeitraum noch festsetzen darf, zum Beispiel während einer laufenden Betriebsprüfung. Lassen Sie das Archiv deshalb nicht automatisch am ersten möglichen Tag löschen, sondern klären Sie das Löschen mit Ihrer Steuerberatung.</p>
+</li>
+<li>
+<p><strong>Andere Versandwege:</strong> Rechnungen, die Sie auf anderem Weg übermitteln, zum Beispiel über ein Portal oder auf Papier, legen Sie selbst im Archiv ab.</p>
+</li>
+<li>
+<p><strong>Angebote:</strong> Little Trotter übergibt versendete Angebote technisch auf dem gleichen Weg. Für Angebote gelten aber andere Aufbewahrungsregeln als für Rechnungen; ein angenommenes Angebot ist in der Regel als Geschäftsbrief aufzubewahren. Die Einzelheiten beschreibt das <a href="user-guide.html#_aufbewahrung_versendeter_angebote">Praxishandbuch</a>; die Frist klären Sie mit Ihrer Steuerberatung.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ablauf_der_archivübergabe"><a class="anchor" href="#_ablauf_der_archivübergabe"></a><a class="link" href="#_ablauf_der_archivübergabe">2. Ablauf der Archivübergabe</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Das Diagramm zeigt den Weg von der finalen E-Rechnung bis ins Archiv. Der Postausgangsserver ist der Server Ihres E-Mail-Dienstleisters, der die E-Mails Ihres Betriebs ins Internet verschickt.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/archive-handover-flow.svg" alt="Ablauf von der finalen E-Rechnung über den Postausgangsserver zum Empfänger und zur Archivadresse" width="100%">
+</div>
+<div class="title">Abbildung 1. Ablauf der Archivübergabe</div>
+</div>
+<div class="paragraph">
+<p>Das fiktive Beispiel: Der Malerbetrieb Brandner versendet die Rechnung „RE-2026-0471“. Die Archivadresse ist <code>archiv@brandner-maler.example</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_stationen"><a class="anchor" href="#_stationen"></a><a class="link" href="#_stationen">2.1. Stationen</a></h3>
+<div class="paragraph">
+<p>Die Nummern entsprechen den Kästen im Diagramm.</p>
+</div>
+<div class="paragraph">
+<p><strong>1 Finale E-Rechnung.</strong> Die zuständige Person im Büro stellt die Rechnung RE-2026-0471 fertig. Little Trotter erzeugt ein PDF/A-3 (ein PDF für die Langzeitaufbewahrung) mit eingebetteter XML-Datei und prüft beides. Ab jetzt lässt sich die Rechnung in Little Trotter nicht mehr ändern; Fehler korrigieren Sie mit einer Storno- oder Korrekturrechnung. <em>Spur:</em> der protokollierte Zeitpunkt der Fertigstellung.</p>
+</div>
+<div class="paragraph">
+<p><strong>2 E-Mail erstellen.</strong> Little Trotter baut die E-Mail aus Text, PDF und XML und speichert das Original. So lässt sich später zeigen, was genau verschickt wurde. <em>Spur:</em> Prüfsummen (digitale Fingerabdrücke) und eine digitale Signatur.</p>
+</div>
+<div class="paragraph">
+<p><strong>3 Postausgangsserver.</strong> Little Trotter übergibt die E-Mail über eine verschlüsselte Verbindung an den Postausgangsserver Ihres E-Mail-Dienstleisters. Der Server bestätigt die Annahme. <em>Spur:</em> Antwort des Servers mit Uhrzeit.</p>
+</div>
+<div class="paragraph">
+<p><strong>4a Zustellung an den Empfänger.</strong> Der Postausgangsserver stellt die E-Mail dem Rechnungsempfänger zu. Für ihn ist es eine gewöhnliche E-Mail mit PDF und XML.</p>
+</div>
+<div class="paragraph">
+<p><strong>4b Kopie an die Archivadresse (nur Option B).</strong> Hat der Postausgangsserver die E-Mail an den Empfänger angenommen (Station 3), schickt Little Trotter dieselbe E-Mail in einer zweiten, eigenen Übertragung an die Archivadresse. Scheitert diese zweite Übertragung, ist die erste davon nicht betroffen; Little Trotter wiederholt nur die Archivkopie.</p>
+</div>
+<div class="paragraph">
+<p><strong>5 Archiv.</strong> Bei Option B nimmt der Mailserver des Archivs die Kopie an, und im Versandverlauf erscheint der Status „Übergeben“. Bei Option A legt der E-Mail-Dienstleister die E-Mail schon beim Versand selbst im Archiv ab (gestrichelte Linie); Little Trotter sieht davon nichts.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Wichtig</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Was die Bestätigung des Servers belegt und was nicht.</strong> Little Trotter erhält nur die Bestätigung Ihres eigenen Postausgangsservers. Sie belegt, dass die E-Mail Ihren Betrieb verlassen hat, aber nicht, dass sie beim Empfänger angekommen ist. Kann der Server die E-Mail später nicht zustellen, schickt er eine Unzustellbarkeitsmeldung an die Absenderadresse Ihres Betriebs. Dieses Postfach muss im Büro regelmäßig gelesen werden; eine nicht zugestellte Rechnung versenden Sie erneut.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Hinweis</div>
+</td>
+<td class="content">
+<div class="title">Warum keine Bcc-Kopie?</div>
+<div class="paragraph">
+<p>Eine Bcc-Adresse steht im Kopf der E-Mail und kann durch Fehler unterwegs beim Empfänger sichtbar werden. Little Trotter setzt deshalb kein Bcc: Die Archivadresse erscheint nirgends in der E-Mail, nur in der Übertragung an das Archiv. Und weil das Archiv eine eigene Übertragung bekommt, kann ein volles Archivpostfach den Versand an den Empfänger nicht verhindern.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/user-guide/36-rechnung-versand-historie.png" alt="Rechnungs-Cockpit mit protokollierter Versandzeile und Link in den Versandverlauf" width="100%">
+</div>
+<div class="title">Abbildung 2. Rechnungs-Cockpit mit Versandzeile</div>
+</div>
+<div class="paragraph">
+<p>Nach dem Versand erzeugt Little Trotter das signierte Archivpaket der E-Mail. Zusammen mit dem Archivpaket der Rechnung belegt es, was erstellt und was versendet wurde (Kapitel <a href="#archivpakete">Archivpakete</a>).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_archivierungsoptionen"><a class="anchor" href="#_archivierungsoptionen"></a><a class="link" href="#_archivierungsoptionen">3. Archivierungsoptionen</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Für die Aufbewahrung gibt es zwei Wege. Beide lassen sich kombinieren.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option A: Der E-Mail-Dienstleister archiviert selbst.</strong> Der Dienstleister legt jede ausgehende E-Mail Ihres Betriebs automatisch in seinem E-Mail-Archiv ab (Fachbegriff: Journaling). In Little Trotter ist nichts einzurichten. Voraussetzung: Ihr Tarif enthält ein E-Mail-Archiv, und es ist eingeschaltet. In Standardtarifen ist das oft nicht der Fall.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option B: Little Trotter schickt eine Kopie an eine Archivadresse.</strong> Ihr Archiv, Ihre Finanzbuchhaltung oder Ihr Dokumentenmanagementsystem (DMS) nennt Ihnen eine eigene E-Mail-Adresse für Belege. Little Trotter schickt jede Rechnungs-E-Mail zusätzlich dorthin und zeigt im Versandverlauf, ob die Kopie angekommen ist.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch decision">
+<caption class="title">Tabelle 1. Welche Option passt</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 16.6666%;">
+<col style="width: 50.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Ihre Ausgangslage</th>
+<th class="tableblock halign-left valign-top">Empfehlung</th>
+<th class="tableblock halign-left valign-top">Worauf Sie achten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Cloud-Bürosoftware im Business-Paket</strong><br>
+(E-Mail, Kalender und Dateien eines großen Anbieters)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Option A, zusätzlich Option B möglich</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Lizenz:</strong> Ein normales Postfach genügt nicht. Die Archivfunktion ist meist eine Zusatzlizenz und muss mit einer Aufbewahrungsregel eingeschaltet werden.<br>
+<strong>Datenschutz:</strong> Vertrag zur Auftragsverarbeitung (AVV) abschließen.<br>
+<strong>Speicherort:</strong> Liegen die Daten außerhalb der EU, braucht die elektronische Aufbewahrung eine Genehmigung des Finanzamts. Wählen Sie einen Speicherort in der EU.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>E-Mail-Paket beim Webhoster oder Internetanbieter</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Option A mit Zusatzarchiv, oder Option B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Zusatzmodul:</strong> Ein normales Postfach ist kein Archiv, auch wenn E-Mails dort lange liegen. Fragen Sie nach einem E-Mail-Archiv, das nach einem anerkannten Prüfstandard geprüft ist (zum Beispiel IDW PS 880).<br>
+<strong>Datenschutz:</strong> AVV mit dem Anbieter abschließen.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Finanzbuchhaltung oder DMS mit Belegeingang per E-Mail</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Option B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Belegadresse:</strong> Das System nennt Ihnen eine eigene E-Mail-Adresse für eingehende Belege.<br>
+<strong>Vorteil:</strong> PDF und XML landen direkt dort, wo gebucht und abgelegt wird.<br>
+<strong>Prüfen:</strong> Ob das System die Belege selbst unveränderbar und acht Jahre aufbewahrt.<br>
+<strong>Datenschutz:</strong> AVV mit dem Anbieter abschließen.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Eigener Mailserver im Haus</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Option A oder Option B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>IT:</strong> Die IT richtet das Journaling am eigenen Mailserver ein oder stellt eine Archivadresse bereit.<br>
+<strong>Speicherort:</strong> Die Daten bleiben im eigenen Netz; Löschschutz und Datensicherung liegen ganz bei Ihnen.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_praxisbeispiel_rechnungsversand"><a class="anchor" href="#_praxisbeispiel_rechnungsversand"></a><a class="link" href="#_praxisbeispiel_rechnungsversand">4. Praxisbeispiel Rechnungsversand</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Im Büro bleibt es bei den zwei gewohnten Klicks: E-Rechnung fertigstellen und senden. Alles Weitere läuft im Hintergrund.</p>
+</div>
+<div class="paragraph">
+<p>Der Malerbetrieb Brandner versendet am 9. Oktober 2026 die Rechnung RE-2026-0471 an die Bäckerei Steinmetz und nutzt die Archivadresse (Option B). Den Versand übernimmt Frau Brandner:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>09:12</strong> Frau Brandner stellt die E-Rechnung fertig (1. Klick). Little Trotter erzeugt PDF und XML und das Archivpaket der Rechnung; der Zeitpunkt steht im Manifest dieses Pakets.</p>
+</li>
+<li>
+<p><strong>09:14</strong> Frau Brandner klickt auf „E-Mail senden“ (2. Klick). Little Trotter baut die E-Mail und speichert das Original.</p>
+</li>
+<li>
+<p><strong>09:14:08</strong> Der Postausgangsserver bestätigt die Annahme. Diese Antwort steht später im Manifest des E-Mail-Pakets.</p>
+</li>
+<li>
+<p><strong>09:14:09</strong> Der Postausgangsserver stellt die E-Mail der Bäckerei Steinmetz zu.</p>
+</li>
+<li>
+<p><strong>09:14:15</strong> Little Trotter schickt die Kopie in einer eigenen Übertragung an die Archivadresse. Der Server bestätigt die Annahme; im Versandverlauf steht „Übergeben“.</p>
+</li>
+<li>
+<p><strong>09:16</strong> Das Archivpaket der E-Mail steht zum Herunterladen bereit.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Bei Option A entfällt der Schritt um 09:14:15: Der E-Mail-Dienstleister archiviert die E-Mail beim Versand selbst. Die Archivpakete sind in beiden Fällen dieselben.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/archive-handover-example.svg" alt="Zeitlicher Ablauf eines Rechnungsversands von der finalen E-Rechnung bis zur Bestätigung der Archivübergabe" width="100%">
+</div>
+<div class="title">Abbildung 3. Beispiel: Rechnung RE-2026-0471 am 9. Oktober</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_beleg_und_nachweis"><a class="anchor" href="#_beleg_und_nachweis"></a><a class="link" href="#_beleg_und_nachweis">5. Beleg und Nachweis</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_was_als_beleg_gilt"><a class="anchor" href="#_was_als_beleg_gilt"></a><a class="link" href="#_was_als_beleg_gilt">5.1. Was als Beleg gilt</a></h3>
+<div class="paragraph">
+<p>Steuerlich maßgeblich ist die E-Rechnung selbst, genauer ihr strukturierter Teil: die XML-Datei. Das PDF ist die lesbare Darstellung derselben Rechnung. Beide liegen als Anhänge in der E-Mail und damit beide im Archiv. Die E-Mail ist nur der Transportweg; ihr Text ist kein Beleg, es sei denn, er enthält zusätzliche Vereinbarungen. Einträge in der Datenbank von Little Trotter ersetzen den Beleg nicht.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zwei_getrennte_quellen"><a class="anchor" href="#_zwei_getrennte_quellen"></a><a class="link" href="#_zwei_getrennte_quellen">5.2. Zwei getrennte Quellen</a></h3>
+<div class="paragraph">
+<p>Der Nachweis stützt sich auf zwei voneinander unabhängige Quellen:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Das Archiv</strong> bewahrt die E-Mail mit PDF und XML unveränderbar auf. Little Trotter hat auf das Archiv keinen Zugriff und kann dort nichts ändern.</p>
+</li>
+<li>
+<p><strong>Little Trotter</strong> belegt mit den Archivpaketen, was erstellt und was versendet wurde, und mit welchen Zeitpunkten und Serverantworten.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Dass die Kopie im Archiv dem Original entspricht, zeigt ein Abgleich: Die Nachrichten-ID (Message-ID) aus dem Manifest des E-Mail-Pakets findet die E-Mail im Archiv. Text, PDF und XML stimmen überein; nur die technischen Kopfzeilen der Mailserver weichen ab.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 2. Welcher Nachweis für welche Frage</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Frage</th>
+<th class="tableblock halign-left valign-top">Nachweis</th>
+<th class="tableblock halign-left valign-top">Wo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Was wurde in Rechnung gestellt?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Die E-Rechnung (XML und PDF) als Anhang der archivierten E-Mail. Ergänzend PDF und XML im Archivpaket der Rechnung.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Archiv; ergänzend Little Trotter (Archivpaket der Rechnung)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Was wurde tatsächlich verschickt?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Die Original-E-Mail (<code>.eml</code>) mit Text, PDF und XML, so wie sie an den Postausgangsserver ging.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Little Trotter: Archivpaket der E-Mail</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wann und an wen?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sendezeitpunkt, Empfängeradresse, Nachrichten-ID und Antwort des Postausgangsservers.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Little Trotter: Manifest im Archivpaket der E-Mail</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wurde seither etwas verändert?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Prüfsummen und Signaturen passen zu den Dateien im Paket.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Little Trotter: Archivpaket</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ist die Kopie im Archiv dieselbe?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abgleich der E-Mail im Archiv mit der Original-E-Mail aus dem Paket.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Archiv und Archivpaket der E-Mail</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wer darf die Archivadresse ändern?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nur Personen mit Administratorrechten. Little Trotter speichert zur Archiveinstellung Zeitpunkt und das Benutzerkonto der letzten Änderung; eine vollständige Änderungshistorie führt es nicht.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Little Trotter: <span class="menuseq"><b class="menu">System</b>&#160;<b class="caret">&#8250;</b> <b class="menuitem">Einstellungen</b></span>; Änderungsprotokoll im Betrieb</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="archivpakete"><a class="anchor" href="#archivpakete"></a><a class="link" href="#archivpakete">6. Archivpakete</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Little Trotter erzeugt zwei getrennte Archivpakete:</p>
+</div>
+<div class="paragraph">
+<p><strong>1. Archivpaket der Rechnung:</strong> belegt, dass PDF und XML der finalen E-Rechnung seit ihrer Erzeugung unverändert sind.<br>
+<strong>2. Archivpaket der E-Mail:</strong> belegt, was genau versendet wurde, wann und an wen.</p>
+</div>
+<div class="paragraph">
+<p><strong>Warum zwei Pakete?</strong> Rechnungserstellung und E-Mail-Versand sind in Little Trotter getrennte Teile mit eigener Datenhaltung. Jeder Teil sichert seine Daten selbst. Die beiden Pakete verweisen deshalb nicht aufeinander; PDF und XML in der E-Mail stammen aber aus der finalen E-Rechnung.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top">Archivpaket der Rechnung</th>
+<th class="tableblock halign-left valign-top">Archivpaket der E-Mail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entsteht</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Beim Fertigstellen der E-Rechnung, nicht bei Entwürfen.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nach dem Versand der E-Mail.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inhalt</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PDF und XML der finalen E-Rechnung, Prüfsummen, Signaturen und Manifest.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Die versendete E-Mail (eml), die Angaben aus dem Versanddialog, Prüfsummen, Signaturen und Manifest.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bedeutung für die Prüfung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ergänzender Nachweis zur Rechnung im Archiv.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ergänzender Nachweis zum Versand.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Herunterladen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In der Übersicht „E-Rechnungs-Aufträge“ der Rechnung über die Schaltfläche „TAR.GZ“.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Im Versandverlauf über das Symbol „Archivpaket herunterladen“.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_archivpaket_der_rechnung"><a class="anchor" href="#_archivpaket_der_rechnung"></a><a class="link" href="#_archivpaket_der_rechnung">6.1. Archivpaket der Rechnung</a></h3>
+<div class="paragraph">
+<p>Little Trotter erzeugt das Paket, sobald die finale E-Rechnung erzeugt ist. Es ist eine Datei im Format tar.gz. In der Übersicht „E-Rechnungs-Aufträge“ laden Sie es über die Schaltfläche „TAR.GZ“ herunter (Hinweistext: „Signiertes Archivpaket herunterladen (tar.gz)“).</p>
+</div>
+<div class="paragraph">
+<p>Aufbau des Pakets, hier mit der Beispielnummer RE-2026-0471:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>manifest.json
+original/RE-2026-0471.pdf               die Rechnung als PDF
+original/RE-2026-0471.pdf.sha256        Prüfsumme des PDF (Format von sha256sum)
+original/RE-2026-0471.xml               die Rechnung als XML
+original/RE-2026-0471.xml.sha256        Prüfsumme des XML
+signed/RE-2026-0471.pdf.sig             digitale Signatur (Ed25519) über das PDF
+signed/RE-2026-0471.pdf.sha256.sig
+signed/RE-2026-0471.xml.sig             digitale Signatur (Ed25519) über das XML
+signed/RE-2026-0471.xml.sha256.sig
+signed/manifest.json.sig                Signatur über das Manifest</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Das Manifest enthält Rechnungsnummer, Rechnungsart (Typcode), Zeitpunkt, Kennung des Erzeugungsauftrags, die Prüfsummen, das Signaturverfahren und den Schlüssel-Fingerabdruck.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_archivpaket_der_e_mail"><a class="anchor" href="#_archivpaket_der_e_mail"></a><a class="link" href="#_archivpaket_der_e_mail">6.2. Archivpaket der E-Mail</a></h3>
+<div class="paragraph">
+<p>Zu jeder erfolgreich versendeten E-Mail erzeugt Little Trotter im Hintergrund das signierte Archivpaket der E-Mail, eine Datei mit dem Namen <code>&lt;Kennung&gt;.tar.gz</code>. Im Versandverlauf laden Sie es über das Symbol „Archivpaket herunterladen“ in der Spalte „Archivpaket“ herunter. Die Aktion „Erneut archivieren“ erzeugt das Paket aus der gespeicherten Original-E-Mail neu; bei gleichem Inhalt entsteht Zeichen für Zeichen dasselbe Paket.</p>
+</div>
+<div class="paragraph">
+<p>Aufbau des Pakets, hier mit der Beispielkennung <code>a3f1c2d4-…</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>manifest.json
+original/a3f1c2d4-….eml                 die E-Mail so, wie sie verschickt wurde (Text, PDF und XML)
+original/a3f1c2d4-….eml.sha256          Prüfsumme der E-Mail (Format von sha256sum)
+original/a3f1c2d4-…-authored.json       was im Versanddialog geschrieben bzw. geändert wurde
+original/a3f1c2d4-…-authored.json.sha256
+signed/a3f1c2d4-….eml.sig               digitale Signatur (Ed25519) über die E-Mail
+signed/a3f1c2d4-….eml.sha256.sig
+signed/a3f1c2d4-…-authored.json.sig
+signed/a3f1c2d4-…-authored.json.sha256.sig
+signed/manifest.json.sig                Signatur über das Manifest</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Das Manifest (<code>manifest.json</code>) ist das Inhaltsverzeichnis des Pakets. Es enthält Kennung des Versandvorgangs, Nachrichten-ID, Empfänger, Erstellungs- und Sendezeitpunkt, die Antwort des Postausgangsservers, Vorlagenart, Vorlagensprache und Vorlagenversion, die Angabe, ob der Text von Hand geändert wurde, die Prüfsummen aller Dateien sowie Signaturverfahren und Schlüssel-Fingerabdruck. Die Felder stehen in fester Reihenfolge, damit auch das Manifest reproduzierbar ist.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prüfsumme_und_signatur"><a class="anchor" href="#_prüfsumme_und_signatur"></a><a class="link" href="#_prüfsumme_und_signatur">6.3. Prüfsumme und Signatur</a></h3>
+<div class="paragraph">
+<p>Die folgenden Abschnitte gelten für beide Archivpakete.</p>
+</div>
+<div class="paragraph">
+<p><strong>Prüfsumme.</strong> Die Prüfsumme (SHA-256) ist ein Fingerabdruck der Datei. Jede Änderung, und sei es nur ein Zeichen, ergibt einen anderen Wert. Sie lässt sich mit Bordmitteln des Betriebssystems nachrechnen.</p>
+</div>
+<div class="paragraph">
+<p><strong>Signatur.</strong> Die digitale Signatur (Ed25519) belegt, dass das Paket mit dem Schlüssel Ihrer Little-Trotter-Installation signiert und seitdem nicht verändert wurde. Der Fingerabdruck des Schlüssels steht im Manifest.</p>
+</div>
+<div class="paragraph">
+<p><strong>Was die Signatur nicht belegt.</strong> Den Schlüssel verwaltet, wer Little Trotter betreibt, also Ihr Betrieb oder dessen IT. Wer den Schlüssel besitzt, könnte ein verändertes Paket neu signieren. Die Signatur enthält auch keinen Zeitstempel einer unabhängigen Stelle. Eine nachträgliche Änderung fällt deshalb erst beim Abgleich mit dem Archiv auf, nicht von selbst. Der unabhängige Nachweis ist das Archiv; die Pakete ergänzen ihn.</p>
+</div>
+<div id="schluessel-hinterlegen" class="paragraph">
+<p><strong>Öffentlichen Schlüssel hinterlegen.</strong> Little Trotter signiert beide Archivpakete mit einem Schlüsselpaar der Installation. Geben Sie den öffentlichen Schlüssel und seinen Fingerabdruck bei der Einrichtung einmal an Ihre Steuerberatung und nehmen Sie beides in Ihre Verfahrensdokumentation auf. So ist später belegbar, welcher Schlüssel in welchem Zeitraum galt. Bei einem Schlüsselwechsel hinterlegen Sie den neuen Schlüssel ebenso, mit Datum. Ältere Pakete bleiben mit dem früheren öffentlichen Schlüssel prüfbar; bewahren Sie ihn deshalb auf. Ist der private Schlüssel abhandengekommen, wechseln Sie ihn sofort und dokumentieren Sie den Zeitpunkt.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tipp</div>
+</td>
+<td class="content">
+Für die IT: Der öffentliche Schlüssel steht in der Konfiguration der Installation in der Umgebungsvariable <code>ARCHIVE_ED25519_PUBLIC_KEY</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Keine Signatur für den Empfänger.</strong> Der Empfänger erhält eine gewöhnliche E-Mail mit PDF und XML, ohne Signaturdateien. Viele automatische Rechnungseingänge lehnen zusätzliche Signaturanhänge ab. Die Signatur bleibt im Betrieb und dient nur den Archivpaketen. PDF und XML im Archivpaket der E-Mail sind dieselben Dateien, die der Empfänger erhalten hat.</p>
+</div>
+<div class="paragraph">
+<p><strong>So wird ein Paket geprüft.</strong> Erst wird die Prüfsumme nachgerechnet: Stimmt sie, ist die Datei unverändert. Dann wird die Signatur mit dem hinterlegten öffentlichen Schlüssel geprüft: Stimmt sie, stammt das Paket von dieser Installation.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tipp</div>
+</td>
+<td class="content">
+Für die IT genügt zum Nachrechnen der Prüfsummen im entpackten Ordner <code>original</code> der Aufruf <code>sha256sum -c</code> auf den <code>.sha256</code>-Dateien.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Beispiel Betriebsprüfung.</strong> Die Prüferin fragt, was am 9. Oktober an die Bäckerei Steinmetz ging. Sie suchen die E-Mail im Archiv und zeigen Rechnung und Anhänge. Aus dem Archivpaket der E-Mail zeigen Sie Sendezeitpunkt, Empfänger und Antwort des Postausgangsservers. Ihre IT rechnet die Prüfsumme der Original-E-Mail nach und vergleicht Text und Anhänge mit der E-Mail im Archiv. Stimmen beide überein, ist die aufbewahrte Rechnung die versendete.</p>
+</div>
+<div class="paragraph">
+<p><strong>Aufbewahrung der Archivpakete.</strong> Die Archivpakete sind ein Nachweis, kein Ersatz für das Archiv. Little Trotter hält sie bereit, solange es betrieben wird. Wird Little Trotter abgeschaltet oder durch eine andere Software ersetzt, sichern Sie vorher die Archivpakete und legen sie im Archiv ab.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_archivübergabe_im_versandverlauf"><a class="anchor" href="#_archivübergabe_im_versandverlauf"></a><a class="link" href="#_archivübergabe_im_versandverlauf">7. Archivübergabe im Versandverlauf</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Der Versandverlauf zeigt zu jeder versendeten E-Mail, ob die Kopie an der Archivadresse angekommen ist.</p>
+</div>
+<div class="sect2">
+<h3 id="_eigene_adresse_für_belege"><a class="anchor" href="#_eigene_adresse_für_belege"></a><a class="link" href="#_eigene_adresse_für_belege">7.1. Eigene Adresse für Belege</a></h3>
+<div class="paragraph">
+<p>Eine eigene Archivadresse (Option B) hat auch neben einem vorhandenen Archiv (Option A) Vorteile:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Belege getrennt vom übrigen E-Mail-Verkehr:</strong> Rechnungen und Angebote landen gesammelt in einem eigenen Postfach oder System, getrennt von der übrigen Korrespondenz der Mitarbeitenden.</p>
+</li>
+<li>
+<p><strong>Direkter Zugriff für Buchhaltung und Steuerberatung:</strong> Sie finden die Ausgangsrechnungen, ohne einen allgemeinen Posteingang durchsuchen zu müssen.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Archiviert Ihr E-Mail-Dienstleister bereits alle ausgehenden E-Mails (Option A), ist die Aufbewahrung damit abgedeckt. Die Archivadresse dient dann nur der Weitergabe an Buchhaltung oder DMS.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_status_der_archivübergabe"><a class="anchor" href="#_status_der_archivübergabe"></a><a class="link" href="#_status_der_archivübergabe">7.2. Status der Archivübergabe</a></h3>
+<div class="paragraph">
+<p>In der Spalte „Archivübergabe“ zeigt ein Symbol den Stand:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 3. Status der Archivübergabe</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Status</th>
+<th class="tableblock halign-left valign-top">Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keine Archivadresse</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In Little Trotter ist keine Archivadresse eingetragen. Das ist richtig, wenn Ihr E-Mail-Dienstleister selbst archiviert (Option A). Little Trotter kann das nicht prüfen: Gibt es kein Archiv beim Dienstleister, wird die Rechnung bei diesem Status nirgends archiviert.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ausstehend</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Die Kopie wird gerade übertragen oder wartet auf einen neuen Versuch.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Übergeben</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Der Mailserver an der Archivadresse hat die Kopie angenommen.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fehlgeschlagen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Die Kopie kam nach mehreren automatischen Versuchen nicht an (zum Beispiel Postfach voll, Server nicht erreichbar). Little Trotter meldet das im Nachrichtenzentrum. Mit der Aktion „Erneut übergeben“ schicken Sie die Kopie noch einmal; der Empfänger erhält dabei keine zweite E-Mail.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abgeschaltet</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Die Übergabe ist für diese Belegart in den Einstellungen ausgeschaltet (zum Beispiel für Angebote).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="imageblock">
+<div class="content">
+<img src="images/user-guide/35-email-versandverlauf.png" alt="Versandverlauf mit Status" width="100%" height="Empfänger">
+</div>
+<div class="title">Abbildung 4. Versandverlauf mit Archivpaket-Download</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/user-guide/38-versandverlauf-archivuebergabe.png" alt="Versandverlauf mit den Spalten Archiv" width="100%">
+</div>
+<div class="title">Abbildung 5. Spalte Archivübergabe im Versandverlauf (hier noch ohne hinterlegte Archivadresse)</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_einrichtung"><a class="anchor" href="#_einrichtung"></a><a class="link" href="#_einrichtung">8. Einrichtung</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Bei Ihrem E-Mail-Dienstleister (beide Optionen).</strong> Klären Sie die <a href="#drei-fragen">drei Fragen</a> und lassen Sie das Archiv freischalten, falls es fehlt. Das ist der eigentliche Aufwand, und er liegt außerhalb von Little Trotter.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option A.</strong> In Little Trotter ist nichts einzurichten. Machen Sie einen Testversand und lassen Sie die E-Mail im Archiv suchen.</p>
+</div>
+<div class="paragraph">
+<p><strong>Option B</strong>, drei Schritte mit Administratorrechten:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Adresse holen.</strong> Lassen Sie sich die Archivadresse von Ihrem E-Mail-Dienstleister, Ihrer Finanzbuchhaltung oder Ihrem DMS nennen.</p>
+</li>
+<li>
+<p><strong>Adresse eintragen.</strong> Tragen Sie sie unter <span class="menuseq"><b class="menu">System</b>&#160;<b class="caret">&#8250;</b> <b class="menuitem">Einstellungen</b></span> im Abschnitt „E-Mail-Archiv“ im Feld „Archivadresse“ ein.</p>
+<div class="imageblock">
+<div class="content">
+<img src="images/user-guide/37-einstellungen-archivadresse.png" alt="Einstellungen" width="100%">
+</div>
+<div class="title">Abbildung 6. Einstellungen: Archivadresse und Übergabe</div>
+</div>
+</li>
+<li>
+<p><strong>Schalter prüfen.</strong> „Rechnungen übergeben“ und „Angebote übergeben“ sind standardmäßig an. Machen Sie danach einen Testversand; im Versandverlauf muss „Übergeben“ erscheinen.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Für beide Optionen:</strong> Hinterlegen Sie den öffentlichen Schlüssel wie unter <a href="#schluessel-hinterlegen">Öffentlichen Schlüssel hinterlegen</a> beschrieben.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_aufgabenteilung"><a class="anchor" href="#_aufgabenteilung"></a><a class="link" href="#_aufgabenteilung">9. Aufgabenteilung</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Erstellung, Versand und Aufbewahrung verteilen sich auf Little Trotter und Ihren Betrieb mit seinen Dienstleistern.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Tabelle 4. Wer ist wofür zuständig</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Little Trotter</th>
+<th class="tableblock halign-left valign-top">Ihr Betrieb und Ihre Dienstleister</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>E-Rechnung erstellen:</strong><br>
+XML und PDF nach den Formaten Factur-X/ZUGFeRD und XRechnung erzeugen und vor dem Fertigstellen prüfen.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Aufbewahren:</strong><br>
+Die E-Mails mit den Rechnungen unveränderbar und mindestens acht Jahre im Archiv aufbewahren.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Fertige Rechnungen sperren:</strong><br>
+Eine fertige Rechnung lässt sich in Little Trotter weder bearbeiten noch löschen.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Löschschutz im Archiv:</strong><br>
+Das Archiv verhindert vorzeitiges Löschen und Überschreiben.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Nachweise erzeugen:</strong><br>
+Archivpakete mit Prüfsummen, Signaturen und Manifest.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Schlüssel und Rechte:</strong><br>
+Signaturschlüssel sicher verwahren, Zugriffsrechte vergeben, Änderungen an der Archiveinstellung protokollieren.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Kopie übergeben:</strong><br>
+Jede Rechnungs-E-Mail an die eingetragene Archivadresse schicken (Option B).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Archiv erreichbar halten:</strong><br>
+Archivpostfach, DMS oder Belegeingang empfangsbereit und mit genug Speicher betreiben.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Protokollieren und wiederholen:</strong><br>
+Sendezeitpunkt, Nachrichten-ID und Serverantwort im Versandverlauf festhalten; fehlgeschlagene Archivkopien automatisch wiederholen und melden.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Kontrollieren:</strong><br>
+Nachrichtenzentrum, Status „Fehlgeschlagen“ und Unzustellbarkeitsmeldungen regelmäßig prüfen und nacharbeiten.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Archivpakete bereithalten:</strong><br>
+Für die Dauer des Betriebs von Little Trotter.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Datensicherung und Prüfung:</strong><br>
+Datenbank und Dokumentenspeicher sichern; der Betriebsprüfung Zugriff auf das Archiv geben; die Verfahrensdokumentation führen.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tipp</div>
+</td>
+<td class="content">
+Für die IT: Die technischen Hintergründe (getrennte Übertragung an die Archivadresse, Aufbewahrung im Betrieb) beschreibt die <a href="arc42-docs.html">Architekturdokumentation</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kurzfassungen"><a class="anchor" href="#_kurzfassungen"></a><a class="link" href="#_kurzfassungen">10. Kurzfassungen</a></h2>
+<div class="sectionbody">
+<div class="quoteblock">
+<div class="title">In einem Satz</div>
+<blockquote>
+<div class="paragraph">
+<p>Little Trotter erstellt und versendet Ihre E-Rechnungen und belegt jeden Schritt mit signierten Archivpaketen; aufbewahrt werden die Rechnungen acht Jahre im Archiv Ihres Betriebs.</p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<div class="title">In drei Sätzen</div>
+<blockquote>
+<div class="paragraph">
+<p>Die Aufbewahrung Ihrer E-Rechnungen über acht Jahre übernimmt ein Archiv: entweder das Ihres E-Mail-Dienstleisters, das jede ausgehende E-Mail selbst ablegt, oder eine Archivadresse, an die Little Trotter jede Rechnungs-E-Mail zusätzlich schickt. Steuerlich maßgeblich ist die E-Rechnung im Anhang dieser E-Mail, vor allem ihre XML-Datei. Little Trotter protokolliert jeden Versand mit Zeitpunkt und Serverantwort und erzeugt als ergänzenden Nachweis signierte Archivpakete für Rechnung und E-Mail.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_begriffe"><a class="anchor" href="#_begriffe"></a><a class="link" href="#_begriffe">11. Begriffe</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die Fachbegriffe dieses Leitfadens (Archivadresse, Bcc, E-Mail-Dienstleister, Journaling, Postausgangsserver, Prüfsumme, digitale Signatur, PDF/A-3, Factur-X und XRechnung, IDW PS 880, GoBD, Verfahrensdokumentation, Archivpaket der Rechnung, Archivpaket der E-Mail, Manifest, Nachrichtenzentrum, Versandverlauf) erklärt das <a href="glossar.html">Fachglossar</a> an einer Stelle für alle Dokumente.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 0.9.59-SNAPSHOT<br>
+Last updated 2026-10-20 13:02:16 UTC
+</div>
+</div>
+</body>
+</html>
